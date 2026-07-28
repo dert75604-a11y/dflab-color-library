@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>DF-LAB · 数字色卡库</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter','PingFang SC','Helvetica Neue',sans-serif;background:#0d0d0b;color:#b8b4aa;line-height:1.5}
+.wrap{max-width:1100px;margin:0 auto;padding:0 20px}
+
+.top{position:sticky;top:0;z-index:10;background:#0d0d0b;border-bottom:1px solid #222;padding:12px 20px;display:flex;align-items:center;gap:12px}
+.top .logo{font-weight:700;font-size:13px;letter-spacing:1px;color:#c4a882;white-space:nowrap}
+.top input{flex:1;padding:8px 14px;background:#1a1a18;border:1px solid #333;border-radius:8px;color:#e8e4dc;font-size:13px;outline:none;max-width:300px}
+.top input:focus{border-color:#c4a882}
+.top input::placeholder{color:#555}
+.top .btn{flex-shrink:0;padding:8px 16px;background:#333;color:#888;border:none;border-radius:8px;font-size:10px;cursor:pointer;text-decoration:none}
+
+.filters{display:flex;gap:8px;flex-wrap:wrap;padding:16px 20px}
+.filters button{background:#1a1a18;border:1px solid #333;border-radius:20px;padding:6px 16px;font-size:11px;color:#888;cursor:pointer;transition:all .15s}
+.filters button:hover,.filters button.on{color:#c4a882;border-color:#c4a882}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;padding-bottom:80px}
+.card{background:#161614;border:1px solid #262420;border-radius:10px;overflow:hidden;cursor:pointer;transition:all .2s}
+.card:hover{border-color:#c4a882;transform:translateY(-2px)}
+.card .swatch{height:180px;display:flex;align-items:center;justify-content:center;position:relative;background-size:cover!important;background-position:center!important}
+.card .swatch .tab{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.5);color:#c4a882;font-size:9px;padding:2px 6px;border-radius:4px}
+.card .info{padding:12px}
+.card .info .name{font-size:13px;font-weight:600;color:#e8e4dc;margin-bottom:2px}
+.card .info .meta{font-size:10px;color:#666;line-height:1.4}
+
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:100;justify-content:center;align-items:center;padding:20px}
+.overlay.on{display:flex}
+.modal{background:#161614;border:1px solid #333;border-radius:14px;max-width:500px;width:100%;max-height:90vh;overflow-y:auto}
+.modal .m-swatch{height:280px;display:flex;align-items:center;justify-content:center;background-size:cover!important;background-position:center!important}
+.modal .m-swatch .big-tag{padding:6px 14px;background:rgba(0,0,0,.6);color:#c4a882;font-size:12px;border-radius:20px}
+.modal .m-body{padding:24px}
+.modal .m-body h3{font-size:20px;font-weight:600;color:#e8e4dc;margin-bottom:12px}
+.modal .m-body .m-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #262420;font-size:13px}
+.modal .m-body .m-row .ml{color:#666}
+.modal .m-body .m-row .mr{color:#e8e4dc}
+.modal .m-actions{display:flex;flex-direction:column;gap:8px;padding:0 24px 24px}
+.modal .m-actions button{width:100%;padding:12px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer}
+.modal .m-actions .primary{background:#c4a882;color:#111;border:none}
+.modal .m-actions .secondary{background:none;border:1px solid #444;color:#888}
+
+.footer{text-align:center;padding:32px;font-size:10px;color:#444}
+.footer span{color:#c4a882}
+
+@media(max-width:640px){.grid{grid-template-columns:repeat(2,1fr)}.top{flex-wrap:wrap}.top input{max-width:100%}}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="logo">DF-LAB · 数字色卡库</div>
+  <input type="text" id="search" placeholder="搜索品种 / 色号…" oninput="filter()">
+  <a class="btn" href="数字色卡库_后台_20260728.html">管理</a>
+</div>
+
+<div class="filters wrap">
+  <button class="on" onclick="filterAll(this)">全部</button>
+  <button onclick="filterTag(this,'榆木')">榆木</button>
+  <button onclick="filterTag(this,'橡木')">橡木</button>
+  <button onclick="filterTag(this,'胡桃')">胡桃</button>
+  <button onclick="filterTag(this,'柚木')">柚木</button>
+  <button onclick="filterTag(this,'哑光')">哑光</button>
+  <button onclick="filterTag(this,'开放漆')">开放漆</button>
+  <button onclick="filterTag(this,'烟熏')">烟熏</button>
+</div>
+
+<div class="grid wrap" id="grid"></div>
+
+<div class="overlay" id="overlay" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="m-swatch" id="mSwatch"></div>
+    <div class="m-body" id="mBody"></div>
+    <div class="m-actions">
+      <button class="primary" onclick="order()">我要定制这个色</button>
+      <button class="secondary" onclick="closeModal()">关闭</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="wxPanel">
+  <div class="modal" onclick="event.stopPropagation()" style="padding:32px;text-align:center">
+    <h3 style="color:#e8e4dc;margin-bottom:16px">联系DF-LAB定制</h3>
+    <button onclick="window.open('weixin://')" style="width:100%;padding:14px;margin-bottom:12px;font-size:14px;background:#c4a882;color:#111;border:none;border-radius:8px;font-weight:600;cursor:pointer">📱 有微信 · 点此直接发消息</button>
+    <div style="padding:12px 0;text-align:center;color:#666;font-size:11px">或扫码添加</div>
+    <div style="background:#fff;width:160px;height:160px;margin:8px auto;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#999;font-size:11px">微信二维码<br>（此处放二维码图）</div>
+    <button onclick="document.getElementById('wxPanel').classList.remove('on')" style="margin-top:16px;background:none;border:none;color:#888;cursor:pointer;font-size:12px">关闭</button>
+  </div>
+</div>
+
+<div class="footer"><span>上海 · DF-LAB</span> 木皮色彩实验室 · 数字色卡库</div>
+
+<script>
+const DATA_URL = 'https://raw.githubusercontent.com/dert75604-a11y/dflab-color-library/main/color-library.json';
+const DEFAULT_DATA = [
+  {name:'烟熏橡木',code:'F-3080',finish:'哑光开放',color:'#8b7355',image:null,uploader:'DF-LAB',tags:['橡木','烟熏','开放漆']},
+  {name:'黑胡桃山纹',code:'F-3061',finish:'哑光开放',color:'#5c4033',image:null,uploader:'DF-LAB',tags:['胡桃','开放漆']},
+  {name:'柚木直纹',code:'F-3071',finish:'哑光开放',color:'#b8956a',image:null,uploader:'DF-LAB',tags:['柚木','开放漆']},
+  {name:'白橡混拼',code:'F-3051',finish:'哑光开放',color:'#d4c5b2',image:null,uploader:'DF-LAB',tags:['橡木','开放漆']},
+  {name:'榆木半山',code:'F-3031',finish:'哑光开放',color:'#c4a882',image:null,uploader:'DF-LAB',tags:['榆木','开放漆']},
+  {name:'烟熏尤加利',code:'F-3081',finish:'哑光开放',color:'#6b5b4f',image:null,uploader:'DF-LAB',tags:['烟熏','开放漆']},
+  {name:'桧木直纹',code:'F-3082',finish:'哑光开放',color:'#e8d5b7',image:null,uploader:'DF-LAB',tags:['开放漆']},
+  {name:'黑檀',code:'G-3049',finish:'哑光开放',color:'#2a1f1a',image:null,uploader:'DF-LAB',tags:['开放漆']},
+  {name:'混油纯白',code:'V1-W',finish:'哑光封闭',color:'#f5f0e8',image:null,uploader:'DF-LAB',tags:['哑光']},
+  {name:'混油暖灰',code:'V1-G',finish:'哑光封闭',color:'#c4bfb3',image:null,uploader:'DF-LAB',tags:['哑光']},
+  {name:'锯齿橡木',code:'F-3047',finish:'哑光开放',color:'#9a8b7a',image:null,uploader:'DF-LAB',tags:['橡木','开放漆']},
+  {name:'胡桃直纹',code:'F-3063',finish:'哑光开放',color:'#4a3528',image:null,uploader:'DF-LAB',tags:['胡桃','开放漆']},
+  {name:'桦木山纹',code:'F-3072',finish:'哑光开放',color:'#e8ddcc',image:null,uploader:'DF-LAB',tags:['开放漆']},
+];
+
+function loadData(){ const d=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null'); return d&&d.length?d:[...DEFAULT_DATA]; }
+let currentTag=null;
+
+function render(data){
+  if(!data) data=loadData();
+  const g=document.getElementById('grid');
+  g.innerHTML=data.map((d,i)=>{
+    const bg=d.image?`url(${d.image})`:'none';
+    const cfg=d.image?`background-image:${bg};background-size:cover;background-position:center;background-color:${d.color}`:`background:${d.color}`;
+    return `<div class="card" onclick="openDetail(${i})">
+      <div class="swatch" style="${cfg}"><div class="tab">${d.code}</div></div>
+      <div class="info"><div class="name">${d.name}</div><div class="meta">${d.finish} · ${d.uploader}</div></div>
+    </div>`;
+  }).join('');
+}
+
+function filter(){
+  const q=document.getElementById('search').value.toLowerCase();
+  let d=loadData();
+  if(currentTag) d=d.filter(x=>x.tags&&x.tags.includes(currentTag));
+  if(q) d=d.filter(x=>x.name.toLowerCase().includes(q)||x.code.toLowerCase().includes(q));
+  render(d);
+}
+
+function filterTag(btn,tag){
+  document.querySelectorAll('.filters button').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');currentTag=tag;filter();
+}
+function filterAll(btn){
+  document.querySelectorAll('.filters button').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');currentTag=null;filter();
+}
+
+function openDetail(i){
+  const d=loadData()[i];
+  const bg=d.image?`url(${d.image})`:'none';
+  const cfg=d.image?`background-image:${bg};background-size:cover;background-position:center;background-color:${d.color}`:`background:${d.color}`;
+  document.getElementById('mSwatch').style=d.image?{backgroundImage:bg,backgroundSize:'cover',backgroundPosition:'center',backgroundColor:d.color}:{background:d.color};
+  document.getElementById('mSwatch').innerHTML=`<div class="big-tag">${d.code} · ${d.name}</div>`;
+  document.getElementById('mBody').innerHTML=`
+    <h3>${d.name}</h3>
+    <div class="m-row"><span class="ml">色号</span><span class="mr">${d.code}</span></div>
+    <div class="m-row"><span class="ml">表面处理</span><span class="mr">${d.finish}</span></div>
+    <div class="m-row"><span class="ml">上传者</span><span class="mr">${d.uploader}</span></div>`;
+  document.getElementById('overlay').classList.add('on');
+}
+function closeModal(e){
+  if(e&&e.target!==document.getElementById('overlay'))return;
+  document.getElementById('overlay').classList.remove('on');
+}
+function order(){
+  document.getElementById('overlay').classList.remove('on');
+  document.getElementById('wxPanel').classList.add('on');
+}
+
+render();
+</script>
+</body>
+</html>
