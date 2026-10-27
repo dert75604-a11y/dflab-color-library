@@ -1,841 +1,1237 @@
 <!DOCTYPE html>
+<!-- production sync 2026-10-27: NFC preview → shanghaidflab.cn; old JSON library retired -->
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#0e0d0b">
-<meta name="description" content="上海·DF-LAB 色彩数据库：免费公开的木作与涂装色彩参考。">
-<meta property="og:title" content="上海·DF-LAB 色彩数据库">
-<meta property="og:description" content="上海·DF-LAB 色彩数据库：免费木作色彩参考。先对编号，再谈落地。">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://shanghaidflab.cn/">
-<link rel="canonical" id="canonical" href="https://shanghaidflab.cn/">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#f7f7f5">
 <title>上海·DF-LAB 色彩数据库</title>
-<!-- 文案来源：from-chatgpt/site-copy-P0.md 。页面只渲染 code / name / color / finish / image / tags / uploader。 -->
 <style>
-:root {
-  --bg: #0e0d0b;
-  --panel: #171511;
-  --line: #2c2822;
-  --text: #f3efe6;
-  --muted: #b7b0a4;
-  --gold: #c6a57a;
-  --note: #2a2118;
-  --note-text: #f6ead7;
-  --danger-line: #c6a57a;
-  color-scheme: dark;
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{max-width:100%;background:#f7f7f5}
+body{
+  color:#111;
+  font-family:"PingFang SC","Helvetica Neue","Microsoft YaHei",sans-serif;
+  -webkit-font-smoothing:antialiased;
 }
-*, *::before, *::after { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--text);
-  font-family: "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", sans-serif;
-  font-size: 16px;
-  line-height: 1.55;
+.phone{
+  max-width:390px;margin:0 auto;background:#f7f7f5;
+  overflow-x:hidden;
+  border:8px solid #1d1d1f;border-radius:28px;
+  box-shadow:0 12px 40px rgba(0,0,0,.12);
 }
-img { max-width: 100%; }
-button, input, a { font: inherit; }
-button { cursor: pointer; }
-.sr {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
+@media(max-width:640px){
+  .phone{border:0;border-radius:0;box-shadow:none;max-width:none}
 }
-.wrap {
-  width: min(1080px, calc(100% - 32px));
-  margin: 0 auto;
+
+.bar{
+  padding:calc(10px + env(safe-area-inset-top,0px)) 16px 10px;
+  background:#3a3a38;border-bottom:1px solid #3a3a38;position:relative;z-index:5;
+  color:#fff;
 }
-.top {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  background: rgba(14, 13, 11, 0.96);
-  border-bottom: 1px solid var(--line);
-  backdrop-filter: blur(8px);
+.bar-lib{
+  padding:7px 16px;
+  margin-top:8px;
+  border-top:1px solid #3a3a38;
+  background:#3a3a38;
+  color:#fff;
 }
-.top-row {
-  width: min(1080px, calc(100% - 32px));
-  margin: 0 auto;
-  padding: 12px 0 10px;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 10px;
+.bar-lib .lib-head{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:12px;
 }
-.brand {
-  color: var(--gold);
-  text-decoration: none;
-  font-weight: 650;
-  letter-spacing: 0.02em;
-  line-height: 1.3;
-  min-width: 0;
+.bar-lib .h1{
+  margin-top:0;
+  font-size:16px;
+  letter-spacing:.12em;
+  line-height:1.2;
 }
-.brand-full { display: none; }
-.brand-short { display: inline; }
-@media (min-width: 720px) {
-  .top-row {
-    grid-template-columns: auto minmax(220px, 420px);
-    align-items: center;
-    justify-content: space-between;
-  }
-  .brand-full { display: inline; }
-  .brand-short { display: none; }
+.bar-lib .sub{
+  margin-top:0;
+  font-size:10px;
+  line-height:1.2;
+  min-height:0;
+  text-align:right;
+  flex:0 1 auto;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width:48%;
 }
-.search { min-width: 0; }
-.search input {
-  width: 100%;
-  min-height: 44px;
-  padding: 10px 12px;
-  border-radius: 10px;
-  border: 1px solid #3a342c;
-  background: #14120f;
-  color: var(--text);
-  font-size: 16px;
-  outline: none;
+.bar .ed{font-size:9px;letter-spacing:.2em;color:rgba(255,255,255,.62)}
+.bar .h1{
+  margin-top:4px;font-family:"Songti SC","Noto Serif SC",Georgia,serif;
+  font-size:22px;font-weight:600;letter-spacing:.08em;line-height:1.1;
+  color:#fff;
 }
-.search input:focus { border-color: var(--gold); }
-.search input::placeholder { color: #8d867b; }
-.disclaimer {
-  margin: 0;
-  padding: 10px 16px;
-  background: var(--note);
-  color: var(--note-text);
-  border-top: 1px solid #3d3226;
-  font-size: 14px;
-  line-height: 1.5;
+.bar .sub{margin-top:2px;font-size:11px;color:rgba(255,255,255,.72);min-height:1.2em}
+
+.bar-top{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:start;
+  gap:12px;
 }
-.disclaimer.inline {
-  border: 1px solid #3d3226;
-  border-left: 3px solid var(--danger-line);
-  border-radius: 10px;
-  margin: 8px auto 0;
+.bar-top .bar-copy{min-width:0}
+.bar-top .bar-logo{
+  display:block;
+  height:9px;
+  width:auto;
+  max-width:48px;
+  object-fit:contain;
+  object-position:right top;
+  flex-shrink:0;
+  opacity:.96;
+  margin-top:6px;
+  margin-right:14px;
 }
-.hero { padding: 28px 0 8px; }
-.hero h1 {
-  margin: 0 0 10px;
-  font-size: clamp(1.7rem, 5vw, 2.55rem);
-  font-weight: 650;
-  letter-spacing: 0.01em;
-  line-height: 1.25;
-  overflow-wrap: anywhere;
+@media (min-width:380px){
+  .bar-top .bar-logo{height:10px;max-width:55px}
 }
-.hero .sub {
-  margin: 0 0 8px;
-  font-size: 1.05rem;
-  color: var(--text);
+
+/* 缩放区：内容多高就是多高，不再强行撑满一屏 */
+.zoom{
+  padding:20px 16px 0;
+  background:#f7f7f5;
 }
-.hero .by {
-  margin: 0;
-  color: var(--gold);
-  font-size: 0.95rem;
+.pair{
+  width:100%;max-width:340px;margin:0 auto;
+  display:flex;flex-direction:column;align-items:center;
+  gap:1.5cm;
 }
-.hero .aux {
-  margin: 8px 0 0;
-  color: var(--muted);
-  font-size: 0.95rem;
+.card{
+  width:100%;aspect-ratio:1/1;
+  border-radius:12px;overflow:hidden;background:#e8e8e4;
+  transform-origin:center center;will-change:transform,box-shadow;position:relative;
 }
-.block { padding: 22px 0; }
-.block h2 {
-  margin: 0 0 12px;
-  font-size: 1.05rem;
-  font-weight: 650;
+.card>img,.macro-slide img{
+  width:100%;height:100%;object-fit:cover;object-position:center;display:block;
+  pointer-events:none;-webkit-user-drag:none;user-select:none;
 }
-.steps {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 10px;
+.macro-shell{width:100%;height:100%;position:relative;touch-action:pan-y;overflow:hidden}
+.macro-track{
+  display:flex;width:200%;height:100%;
+  transform:translate3d(0,0,0);will-change:transform;
+  transition:transform .28s cubic-bezier(.22,.8,.28,1);
 }
-@media (min-width: 800px) {
-  .steps { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.macro-track.is-drag{transition:none}
+.macro-slide{flex:0 0 50%;width:50%;height:100%}
+.macro-dots{
+  position:absolute;left:0;right:0;bottom:8px;
+  display:flex;justify-content:center;gap:5px;pointer-events:none;z-index:2;
 }
-.steps li {
-  margin: 0;
-  padding: 14px;
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  min-width: 0;
+.macro-dots i{
+  width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.4);
+  box-shadow:0 0 0 1px rgba(0,0,0,.12);
 }
-.steps .n {
-  display: block;
-  color: var(--gold);
-  font-size: 0.8rem;
-  letter-spacing: 0.06em;
-  margin-bottom: 4px;
+.macro-dots i.on{background:#fff}
+
+/* 仅用于制造一点滚动行程，不影响色卡可见性 */
+.zoom-travel{height:8px;pointer-events:none}
+
+.lib{background:#f7f7f5}
+.swatch-wrap{padding:28px 0 24px 14px;background:#f7f7f5}
+.wood-rows{display:flex;flex-direction:column;gap:18px}
+.wood-row{
+  display:grid;
+  grid-template-columns:2.2em minmax(0,1fr);
+  gap:10px;
+  align-items:center;
 }
-.steps h3 {
-  margin: 0 0 4px;
-  font-size: 1rem;
+.wood-label{
+  writing-mode:vertical-rl;
+  text-orientation:mixed;
+  font-size:12px;
+  letter-spacing:.22em;
+  color:#333;
+  font-weight:500;
+  text-align:center;
+  justify-self:center;
+  line-height:1.2;
+  position:sticky;left:0;z-index:2;
 }
-.steps p { margin: 0; color: var(--muted); }
-.steps code {
-  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
-  font-size: 0.92em;
-  color: var(--text);
+.wood-scroll{
+  overflow-x:auto;overflow-y:visible;
+  background:#f7f7f5;
+  -webkit-overflow-scrolling:touch;
+  scroll-snap-type:x mandatory;scroll-padding-left:8px;scroll-behavior:auto;
+  touch-action:pan-x pan-y; /* JS 判定横滑后切 pan-x，竖滑切 pan-y */
+  scrollbar-width:none;
+  overscroll-behavior-x:contain;
+  overscroll-behavior-y:contain;
 }
-.tags {
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  padding: 0 0 12px;
-  scrollbar-width: none;
+.wood-scroll::-webkit-scrollbar{display:none}
+.wood-track{
+  display:flex;gap:10px;
+  width:max-content;
+  padding:8px 16px 12px 8px; /* 选框外圈不被裁切 */
 }
-.tags::-webkit-scrollbar { display: none; }
-.tags button {
-  flex: 0 0 auto;
-  min-height: 36px;
-  padding: 6px 12px;
-  border-radius: 999px;
-  border: 1px solid #3a342c;
-  background: transparent;
-  color: var(--muted);
+.swatch{
+  appearance:none;-webkit-appearance:none;border:0;padding:0;margin:0;
+  background:transparent;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  display:flex;flex-direction:column;align-items:stretch;gap:6px;
+  position:relative;
+  flex:0 0 auto;
+  width:28vw;max-width:96px;min-width:72px;
+  scroll-snap-align:start;scroll-snap-stop:normal;
 }
-.tags button[aria-pressed="true"] {
-  color: var(--gold);
-  border-color: var(--gold);
-  background: rgba(198, 165, 122, 0.08);
+.swatch-shot{
+  position:relative;
+  width:100%;
+  aspect-ratio:1/1;
+  border-radius:10px;overflow:hidden;
+  background:#f7f7f5;
+  box-shadow:0 1px 3px rgba(0,0,0,.04),0 8px 16px rgba(0,0,0,.07);
+  transition:transform .22s ease,box-shadow .22s ease;
 }
-.grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+.swatch-name{
+  display:block;
+  font-size:10px;
+  line-height:1.25;
+  color:#6b6b68;
+  text-align:center;
+  letter-spacing:.04em;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
-@media (min-width: 720px) {
-  .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.swatch.on .swatch-name{color:#1a1a1a;font-weight:600}
+.wood-filters{
+  display:flex;
+  gap:8px;
+  overflow-x:auto;
+  padding:0 16px 16px 0;
+  scrollbar-width:none;
+  -webkit-overflow-scrolling:touch;
 }
-@media (min-width: 1040px) {
-  .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.wood-filters::-webkit-scrollbar{display:none}
+.wood-chip{
+  flex:0 0 auto;
+  border:0;
+  background:#e6e6e2;
+  color:#333;
+  font-family:inherit;
+  font-size:12px;
+  letter-spacing:.08em;
+  line-height:1;
+  padding:8px 14px;
+  border-radius:999px;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
 }
-.card {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  padding: 0;
-  text-align: left;
-  color: inherit;
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  overflow: hidden;
+.wood-chip.on{background:#3a3a38;color:#fff}
+.wood-row[hidden]{display:none}
+.swatch-shot img{
+  width:100%;height:100%;
+  object-fit:cover;object-position:center;display:block;
 }
-.card:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
-.swatch {
-  aspect-ratio: 1;
-  background: #3a342c center/cover no-repeat;
+.swatch:active .swatch-shot{transform:none;opacity:.92}
+.swatch.on .swatch-shot{
+  outline:none;
+  transform:none;
+  /* 明显选框，不放大；外圈留白避免贴边看不清 */
+  box-shadow:
+    inset 0 0 0 2px #1d1d1f,
+    0 0 0 2px #f7f7f5,
+    0 0 0 3.5px #1d1d1f,
+    0 2px 8px rgba(0,0,0,.08);
 }
-.swatch img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
+
+
+/* 页尾原则 */
+.page-foot{
+  padding:0;
+  text-align:center;
+  background:#ebebe8;
+  border-top:0;
 }
-.card .info { padding: 10px 10px 12px; min-width: 0; }
-.card .name {
-  display: block;
-  font-weight: 650;
-  font-size: 0.95rem;
-  margin-bottom: 2px;
+.page-foot .principles{
+  max-width:none;
+  margin:0;
+  padding:22px 16px 8px;
+  text-align:left;
+  background:#ebebe8;
+  border:0;
 }
-.card .code, .card .finish {
-  display: block;
-  color: var(--muted);
-  font-size: 0.8rem;
+.page-foot .p-item{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 52px;
+  gap:14px;
+  align-items:center;
+  max-width:340px;
+  margin:0 auto;
+  padding:20px 0;
+  border-bottom:1px solid #dddcd7;
 }
-.empty {
-  grid-column: 1 / -1;
-  padding: 28px 8px 12px;
-  color: var(--muted);
+.page-foot .p-item:last-child{border-bottom:0;padding-bottom:16px}
+.page-foot .p-title{
+  font-size:15px;font-weight:600;color:#1a1a1a;
+  letter-spacing:.04em;line-height:1.35;
 }
-.empty p { margin: 0 0 12px; }
-.empty button, .btn, .actions button, .close {
-  min-height: 44px;
-  padding: 10px 14px;
-  border-radius: 10px;
-  border: 1px solid #3a342c;
-  background: transparent;
-  color: var(--text);
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+.page-foot .p-desc{
+  margin-top:8px;
+  font-size:12.5px;line-height:1.75;color:#666;
+  letter-spacing:.02em;
 }
-.actions .pri, .empty button {
-  background: var(--gold);
-  color: #1a140e;
-  border-color: transparent;
-  font-weight: 650;
+.page-foot .p-ico{
+  width:48px;height:48px;border-radius:50%;
+  border:1.5px solid #1a1a1a;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+  background:transparent;
 }
-.prose p { margin: 0 0 12px; }
-.aka { color: var(--muted); font-size: 0.92rem; }
-.legal p { margin: 0 0 12px; color: var(--note-text); }
-footer {
-  padding: 8px 0 48px;
+.page-foot .p-ico svg{width:22px;height:22px;display:block}
+.page-foot .foot-brand{
+  background:#3a3a38;
+  color:#fff;
+  padding:26px 20px calc(30px + env(safe-area-inset-bottom,0px));
+  margin:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:10px;
 }
-.foot-brand {
-  margin: 0 0 4px;
-  color: var(--gold);
+.page-foot .foot-mark{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
 }
-.foot-line {
-  margin: 0 0 14px;
-  color: var(--muted);
-  font-size: 0.95rem;
+.page-foot .foot-city{
+  margin:0;
+  font-family:Helvetica,Arial,"PingFang SC","Helvetica Neue","Hiragino Sans GB",sans-serif;
+  font-weight:900;
+  font-size:15px;
+  letter-spacing:.18em;
+  line-height:1;
+  color:#fff;
+  text-transform:none;
+  transform:translateY(.5px);
+  -webkit-text-stroke:0.35px #fff;
 }
-.foot-links { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
-dialog {
-  padding: 0;
-  border: 1px solid var(--line);
-  background: #120f0c;
-  color: var(--text);
-  width: min(560px, 100%);
-  max-width: 100%;
-  max-height: 100dvh;
+.page-foot .foot-logo{
+  display:block;
+  height:18px;
+  width:auto;
+  max-width:120px;
+  object-fit:contain;
+  opacity:.96;
 }
-dialog::backdrop { background: rgba(6, 5, 4, 0.78); }
-@media (max-width: 640px) {
-  dialog {
-    width: 100%;
-    height: 100dvh;
-    max-height: 100dvh;
-    margin: 0;
-    border: 0;
-  }
+.page-foot .meta{
+  margin:0;font-size:11px;color:rgba(255,255,255,.62);letter-spacing:.06em;
 }
-.sheet { display: flex; flex-direction: column; max-height: 100dvh; }
-.sheet-bar {
-  display: flex;
-  justify-content: flex-start;
-  padding: 10px 12px 0;
+.page-foot .foot-icp{
+  margin:2px 0 0;
+  font-size:11px;
+  color:rgba(255,255,255,.62);
+  letter-spacing:.04em;
+  text-align:center;
 }
-.sheet-photo {
-  margin: 8px 12px 0;
-  border-radius: 12px;
-  overflow: hidden;
-  background: #2a261f center/contain no-repeat;
-  min-height: 180px;
+.page-foot .foot-icp a{
+  color:rgba(255,255,255,.72);
+  text-decoration:none;
+  border-bottom:1px solid rgba(255,255,255,.28);
 }
-.sheet-photo img {
-  width: 100%;
-  height: min(48vh, 420px);
-  object-fit: contain;
-  display: block;
-  background: transparent;
+.page-foot .foot-icp a:hover{color:#fff;border-bottom-color:rgba(255,255,255,.55)}
+
+
+
+/* 顶栏下木种介绍 */
+.intro{
+  padding:22px 16px 0;
+  background:#f7f7f5;
 }
-.sheet-body { padding: 16px 16px 8px; overflow: auto; }
-.sheet-body h2 { margin: 0 0 12px; font-size: 1.45rem; }
-dl { margin: 0 0 14px; display: grid; grid-template-columns: 4.5em minmax(0, 1fr); gap: 8px 10px; }
-dt { color: var(--muted); }
-dd { margin: 0; overflow-wrap: anywhere; }
-.hex {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
+.intro-inner{
+  width:100%;max-width:340px;margin:0 auto;
 }
-.chip {
-  width: 18px;
-  height: 18px;
-  border-radius: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.35);
+.intro .wood-name{
+  font-family:"Songti SC","Noto Serif SC",Georgia,serif;
+  font-size:20px;font-weight:600;
+  letter-spacing:.14em;
+  color:#1a1a1a;
+  line-height:1.25;
 }
-.share-box {
-  margin: 0 0 14px;
-  padding: 12px;
-  border-radius: 10px;
-  background: #1b1814;
-  border: 1px solid var(--line);
-  font-size: 0.92rem;
+.intro .wood-copy{
+  margin-top:12px;
+  font-size:13px;
+  line-height:1.85;
+  color:#555;
+  letter-spacing:.02em;
+  text-align:justify;
+  text-justify:inter-ideograph;
 }
-.share-box p { margin: 0 0 6px; }
-.share-box p:last-child { margin: 0; }
-.share-box a { color: var(--gold); overflow-wrap: anywhere; }
-.actions { display: grid; gap: 8px; }
-.sheet-disclaimer { margin-top: auto; }
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
+.intro .wood-copy p + p{margin-top:8px}
+
+
+/* 技术参数 */
+.specs{
+  padding:28px 16px 24px;
+  background:#f7f7f5;
 }
+.specs-inner{width:100%;max-width:340px;margin:0 auto}
+.specs .specs-title{
+  font-family:"Songti SC","Noto Serif SC",Georgia,serif;
+  font-size:20px;font-weight:600;
+  letter-spacing:.14em;
+  color:#1a1a1a;
+  margin-bottom:10px;
+  line-height:1.25;
+}
+.specs .row{
+  display:grid;
+  grid-template-columns:6.2em minmax(0,1fr);
+  gap:14px 18px;
+  padding:14px 0;
+  border-bottom:1px solid #e6e6e2;
+  font-size:13.5px;
+  align-items:baseline;
+}
+.specs .row:last-of-type{border-bottom:0}
+.specs .k{color:#888;letter-spacing:.04em;line-height:1.5}
+.specs .v{color:#1a1a1a;font-weight:500;line-height:1.55;word-break:break-word}
+.specs .note{
+  margin-top:18px;
+  padding:14px 14px 14px 16px;
+  background:#efefec;
+  border-radius:10px;
+  border-left:3.5px solid #1a1a1a;
+  font-size:12px;
+  line-height:1.7;
+  color:#555;
+  letter-spacing:.02em;
+  box-shadow:0 1px 3px rgba(0,0,0,.03);
+}
+
+
+
+.foot-summary{
+  width:100%;max-width:340px;margin:0 auto;
+  padding:22px 16px 20px;
+  text-align:left;
+}
+.foot-summary .foot-name{
+  font-family:"Songti SC","Noto Serif SC",Georgia,serif;
+  font-size:18px;font-weight:600;
+  letter-spacing:.12em;color:#1a1a1a;line-height:1.3;
+}
+.foot-summary .foot-meta{
+  margin-top:8px;font-size:13px;color:#555;letter-spacing:.04em;line-height:1.5;
+}
+.foot-summary .foot-note{
+  margin-top:14px;font-size:12px;line-height:1.7;color:#666;letter-spacing:.02em;
+}
+
+
+.back-lib{
+  position:fixed;z-index:45;
+  left:max(14px, env(safe-area-inset-left,0px));
+  bottom:max(18px, calc(14px + env(safe-area-inset-bottom,0px)));
+  display:none;align-items:center;height:40px;padding:0 14px;
+  border:0;border-radius:999px;background:#3a3a38;color:#fff;
+  font-family:inherit;font-size:12px;letter-spacing:.08em;
+  box-shadow:0 4px 14px rgba(0,0,0,.18);
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
+}
+.back-lib.show{display:flex}
+
+.lib-entry{
+  display:flex;align-items:center;justify-content:space-between;
+  width:100%;max-width:340px;margin:0 auto;
+  padding:2px 16px 22px;
+  border:0;background:transparent;
+  color:#1a1a1a;
+  font-family:inherit;font-size:13px;letter-spacing:.14em;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
+}
+.lib-entry .chev{font-size:16px;letter-spacing:0;color:#888}
+.library{
+  display:none;position:fixed;inset:0;z-index:80;
+  background:#f7f7f5;color:#111;
+  overflow:auto;-webkit-overflow-scrolling:touch;
+}
+.library.open{display:block}
+.library-bar{
+  position:sticky;top:0;z-index:2;
+  display:flex;align-items:center;gap:10px;
+  padding:calc(12px + env(safe-area-inset-top,0px)) 16px 12px;
+  background:#3a3a38;color:#fff;
+}
+.library-back{
+  border:0;background:transparent;color:#fff;
+  font-family:inherit;font-size:14px;letter-spacing:.08em;
+  padding:4px 0;cursor:pointer;-webkit-tap-highlight-color:transparent;
+}
+.library-title{font-size:16px;letter-spacing:.12em;font-weight:600}
+.library-count{margin-left:auto;font-size:11px;color:rgba(255,255,255,.62)}
+.library .wood-filters{padding:14px 16px 0}
+.library-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:16px 12px;
+  padding:16px 16px calc(28px + env(safe-area-inset-bottom,0px));
+  max-width:420px;margin:0 auto;
+}
+.lib-card{
+  border:0;padding:0;margin:0;background:transparent;
+  text-align:left;cursor:pointer;font-family:inherit;
+  -webkit-tap-highlight-color:transparent;
+}
+.lib-card img{
+  width:100%;aspect-ratio:1/1;object-fit:cover;display:block;
+  border-radius:12px;background:#e8e8e4;
+}
+.lib-card .lib-card-name{
+  display:block;margin-top:8px;
+  font-size:12px;letter-spacing:.06em;color:#1a1a1a;line-height:1.3;
+}
+.lib-card[hidden]{display:none}
+
+/* 回到顶部 */
+.to-top{
+  position:fixed;
+  right:max(14px, env(safe-area-inset-right,0px));
+  bottom:max(18px, calc(14px + env(safe-area-inset-bottom,0px)));
+  z-index:40;
+  width:40px;height:40px;
+  border:0;border-radius:50%;
+  background:#3a3a38;color:#fff;
+  box-shadow:0 4px 14px rgba(0,0,0,.18);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  opacity:0;pointer-events:none;
+  transform:translateY(8px);
+  transition:opacity .2s ease, transform .2s ease;
+  -webkit-tap-highlight-color:transparent;
+}
+.to-top.show{opacity:.92;pointer-events:auto;transform:translateY(0)}
+.to-top:active{opacity:1;transform:scale(.96)}
+.to-top svg{width:18px;height:18px;display:block}
+
 </style>
 </head>
 <body>
-<header class="top">
-  <div class="top-row">
-    <a class="brand" href="#top">
-      <span class="brand-full">上海·DF-LAB 色彩数据库</span>
-      <span class="brand-short">DF-LAB · 色彩数据库</span>
-    </a>
-    <form class="search" role="search" id="search-form">
-      <label class="sr" for="q">按色名、编号或标签查找</label>
-      <input id="q" type="search" placeholder="色名、编号或标签" enterkeyhint="search" autocomplete="off">
-    </form>
-  </div>
-  <p class="disclaimer" role="note">屏显色 ≠ 实物色。光线、屏幕与涂装工艺都会造成偏差。落地请以实验室打样为准。</p>
-</header>
-
-<main id="top">
-  <div class="wrap hero">
-    <h1>上海·DF-LAB 色彩数据库</h1>
-    <p class="sub">免费公开的木作色彩参考。先对编号，再谈落地。</p>
-    <p class="by">上海 · DF-LAB</p>
-    <p class="aux">屏上所见为参考色；实物以打样为准。</p>
-  </div>
-
-  <section class="wrap block" aria-labelledby="how-title">
-    <h2 id="how-title">怎么用</h2>
-    <ol class="steps">
-      <li>
-        <span class="n">1</span>
-        <h3>搜色</h3>
-        <p>按色名、编号或标签查找。</p>
-      </li>
-      <li>
-        <span class="n">2</span>
-        <h3>看图与编号</h3>
-        <p>对照规范图，记下 <code>code</code>，方便和设计师、门店对齐。</p>
-      </li>
-      <li>
-        <span class="n">3</span>
-        <h3>要落地，来打样</h3>
-        <p>需要实物色时，联系实验室打样；网页色不作验收依据。</p>
-      </li>
-    </ol>
-  </section>
-
-  <section class="wrap block" aria-labelledby="lib-title">
-    <h2 id="lib-title" class="sr">色卡</h2>
-    <div class="tags" id="tags" hidden></div>
-    <div class="grid" id="grid" aria-live="polite" aria-busy="true"></div>
-    <p class="disclaimer inline" role="note">屏显色 ≠ 实物色。光线、屏幕与涂装工艺都会造成偏差。落地请以实验室打样为准。</p>
-  </section>
-
-  <article class="wrap block prose" id="about">
-    <h2>关于</h2>
-    <p>上海 · DF-LAB 做木作样板、色彩与材料落地相关的研究与服务。</p>
-    <p>「上海·DF-LAB 色彩数据库」把实验室日常打出的样板整理成可检索的公开参考：有规范图、色名与编号，方便设计师写方案、客户选色、门店与工厂对齐说法。</p>
-    <p>我们分享的是颜色语言，不是配方。屏上的色只作参考；要准，请打样。</p>
-    <p class="aka">实验室亦称大凡实验室。</p>
-  </article>
-
-  <section class="wrap block prose" id="contact">
-    <h2>需要实物色或打样？</h2>
-    <p>把色卡编号发给我们，或说明用途与基材，实验室再帮你定下一步。</p>
-  </section>
-</main>
-
-<footer>
-  <div class="wrap">
-    <p class="foot-brand">上海 · DF-LAB</p>
-    <p class="foot-line">色彩数据库仅供参考 · 不展示配方 · 落地以打样为准</p>
-    <div class="foot-links">
-      <a class="btn" href="#about">了解实验室</a>
-      <a class="btn" href="#contact">联系打样</a>
-    </div>
-    <div class="legal" id="disclaimer">
-      <p>本库色卡来自上海 · DF-LAB 实验室实物样板的数字化记录，供方案沟通与编号对齐使用。</p>
-      <p>不同设备、浏览器与环境光会导致颜色显示差异；照片与 hex 仅为参考，<strong>不能</strong>替代实物验收。</p>
-      <p>本库不提供油漆配方、克数或调色比例，不承诺任何对色百分比。</p>
-      <p>若需用于家具、门墙柜或现场施工，请联系 DF-LAB 打样或索取实物色卡，以打样结果为准。</p>
-    </div>
-  </div>
-</footer>
-
-<dialog id="sheet" aria-labelledby="sheet-name">
-  <div class="sheet">
-    <div class="sheet-bar">
-      <button type="button" class="close" id="close-sheet">关闭</button>
-    </div>
-    <div class="sheet-photo" id="sheet-photo"></div>
-    <div class="sheet-body">
-      <h2 id="sheet-name"></h2>
-      <dl id="sheet-meta"></dl>
-      <div class="share-box">
-        <p id="share-l1"></p>
-        <p>屏显仅供参考，落地以打样为准。</p>
-        <p><a id="share-link" href=""></a></p>
+<div class="phone">
+  <header class="bar">
+    <div class="bar-top">
+      <div class="bar-copy">
+        <p class="ed">创世版</p>
+        <h1 class="h1">金柚</h1>
+        <p class="sub">缅甸黄柚 · 自然混拼</p>
       </div>
-      <div class="actions">
-        <button type="button" class="pri" id="share-btn">分享</button>
-        <button type="button" id="copy-code">复制编号</button>
-        <a class="btn" href="#contact" id="go-contact">联系打样</a>
-        <a class="btn" href="#about" id="go-about">了解实验室</a>
+      <img class="bar-logo" src="nfc-scroll-assets/df-lab-logo.png?v=2" alt="DF-LAB" width="272" height="64">
+    </div>
+  </header>
+
+  <section class="intro" aria-label="木种介绍">
+    <div class="intro-inner">
+      <h2 class="wood-name">缅甸黄柚</h2>
+      <div class="wood-copy">
+        <p>缅甸黄柚金线分明、热带贵气，适合需要温度与度假感的空间。</p>
+        <p>天然底色表情丰富；大货与色卡对齐表面色相，保留木纹自然生长感。</p>
       </div>
     </div>
-    <p class="disclaimer sheet-disclaimer" role="note">屏显色 ≠ 实物色。光线、屏幕与涂装工艺都会造成偏差。落地请以实验室打样为准。</p>
+  </section>
+
+  <section class="zoom" id="zoom">
+    <div class="pair" id="pair">
+      <div class="card" id="mainCard">
+        <img id="mainImg" src="nfc-scroll-assets/img-00.jpg" alt="主图">
+      </div>
+      <div class="card" id="macroCard">
+        <div class="macro-shell" id="macroShell">
+          <div class="macro-track" id="macroTrack">
+            <div class="macro-slide"><img id="macroImg0" src="nfc-scroll-assets/img-01.jpg" alt="特写1"></div>
+            <div class="macro-slide"><img id="macroImg1" src="nfc-scroll-assets/img-02.jpg" alt="特写2"></div>
+          </div>
+          <div class="macro-dots" id="macroDots"><i class="on"></i><i></i></div>
+        </div>
+      </div>
+    </div>
+    <div class="zoom-travel" id="zoomTravel" aria-hidden="true"></div>
+  </section>
+
+  <section class="specs" aria-label="技术参数">
+    <div class="specs-inner">
+      <h2 class="specs-title">技术参数</h2>
+      <div class="row"><span class="k">尺寸</span><span class="v">400 × 450 × 18 mm</span></div>
+      <div class="row"><span class="k">表层厚度</span><span class="v">0.6 mm</span></div>
+      <div class="row"><span class="k">载体材料</span><span class="v">海洋板</span></div>
+      <div class="row"><span class="k">木材种类</span><span class="v">缅甸黄柚</span></div>
+      <div class="row"><span class="k">拼接方式</span><span class="v">自然混拼</span></div>
+      <div class="row"><span class="k">涂装方式</span><span class="v">欧洲水性底着色工艺</span></div>
+      <div class="row"><span class="k">颜色比例</span><span class="v">待定</span></div>
+      <div class="row"><span class="k">水性涂料</span><span class="v">欧洲配方国内精制 · 仅供内部 SOP 与授权工厂大货落地，不对外销售</span></div>
+      <p class="note">完整涂装与复刻操作流程不开放。终端与经销商请对接合作工厂；工厂对接 DF-LAB 获取标准与 SOP。</p>
+    </div>
+  </section>
+
+  <section class="lib" id="libBlock">
+    <header class="bar bar-lib" id="libTop">
+      <div class="lib-head">
+        <h1 class="h1">色彩数据库</h1>
+        <p class="sub" id="libSub">点选色卡切换主图与特写</p>
+      </div>
+    </header>
+    <div class="swatch-wrap">
+      <div class="wood-rows" id="swatches">
+        <div class="wood-row" data-cat="胡桃木"><div class="wood-label">胡桃木</div><div class="wood-scroll"><div class="wood-track"><button type="button" class="swatch on" data-i="0" data-wood="胡桃木"><span class="swatch-shot"><img src="nfc-scroll-assets/img-00.jpg" alt="胡桃木" loading="lazy"></span></button><button type="button" class="swatch" data-i="1" data-wood="胡桃木"><span class="swatch-shot"><img src="nfc-scroll-assets/img-01.jpg" alt="胡桃木" loading="lazy"></span></button><button type="button" class="swatch" data-i="2" data-wood="胡桃木"><span class="swatch-shot"><img src="nfc-scroll-assets/img-02.jpg" alt="胡桃木" loading="lazy"></span></button><button type="button" class="swatch" data-i="3" data-wood="胡桃木"><span class="swatch-shot"><img src="nfc-scroll-assets/img-03.jpg" alt="胡桃木" loading="lazy"></span></button><button type="button" class="swatch" data-i="0" data-wood="胡桃木"><span class="swatch-shot"><img src="nfc-scroll-assets/img-00.jpg" alt="胡桃木" loading="lazy"></span></button><button type="button" class="swatch" data-i="1" data-wood="胡桃木"><span class="swatch-shot"><img src="nfc-scroll-assets/img-01.jpg" alt="胡桃木" loading="lazy"></span></button><button type="button" class="swatch" data-i="2" data-wood="胡桃木"><span class="swatch-shot"><img src="nfc-scroll-assets/img-02.jpg" alt="胡桃木" loading="lazy"></span></button><button type="button" class="swatch" data-i="3" data-wood="胡桃木"><span class="swatch-shot"><img src="nfc-scroll-assets/img-03.jpg" alt="胡桃木" loading="lazy"></span></button></div></div></div>
+        <div class="wood-row" data-cat="橡木"><div class="wood-label">橡木</div><div class="wood-scroll"><div class="wood-track"><button type="button" class="swatch" data-i="4" data-wood="橡木"><span class="swatch-shot"><img src="nfc-scroll-assets/img-04.jpg" alt="橡木" loading="lazy"></span></button><button type="button" class="swatch" data-i="5" data-wood="橡木"><span class="swatch-shot"><img src="nfc-scroll-assets/img-05.jpg" alt="橡木" loading="lazy"></span></button><button type="button" class="swatch" data-i="6" data-wood="橡木"><span class="swatch-shot"><img src="nfc-scroll-assets/img-06.jpg" alt="橡木" loading="lazy"></span></button><button type="button" class="swatch" data-i="7" data-wood="橡木"><span class="swatch-shot"><img src="nfc-scroll-assets/img-07.jpg" alt="橡木" loading="lazy"></span></button><button type="button" class="swatch" data-i="4" data-wood="橡木"><span class="swatch-shot"><img src="nfc-scroll-assets/img-04.jpg" alt="橡木" loading="lazy"></span></button><button type="button" class="swatch" data-i="5" data-wood="橡木"><span class="swatch-shot"><img src="nfc-scroll-assets/img-05.jpg" alt="橡木" loading="lazy"></span></button><button type="button" class="swatch" data-i="6" data-wood="橡木"><span class="swatch-shot"><img src="nfc-scroll-assets/img-06.jpg" alt="橡木" loading="lazy"></span></button><button type="button" class="swatch" data-i="7" data-wood="橡木"><span class="swatch-shot"><img src="nfc-scroll-assets/img-07.jpg" alt="橡木" loading="lazy"></span></button></div></div></div>
+        <div class="wood-row" data-cat="榆木"><div class="wood-label">榆木</div><div class="wood-scroll"><div class="wood-track"><button type="button" class="swatch" data-i="8" data-wood="榆木"><span class="swatch-shot"><img src="nfc-scroll-assets/img-08.jpg" alt="榆木" loading="lazy"></span></button><button type="button" class="swatch" data-i="9" data-wood="榆木"><span class="swatch-shot"><img src="nfc-scroll-assets/img-09.jpg" alt="榆木" loading="lazy"></span></button><button type="button" class="swatch" data-i="10" data-wood="榆木"><span class="swatch-shot"><img src="nfc-scroll-assets/img-10.jpg" alt="榆木" loading="lazy"></span></button><button type="button" class="swatch" data-i="11" data-wood="榆木"><span class="swatch-shot"><img src="nfc-scroll-assets/img-11.jpg" alt="榆木" loading="lazy"></span></button><button type="button" class="swatch" data-i="8" data-wood="榆木"><span class="swatch-shot"><img src="nfc-scroll-assets/img-08.jpg" alt="榆木" loading="lazy"></span></button><button type="button" class="swatch" data-i="9" data-wood="榆木"><span class="swatch-shot"><img src="nfc-scroll-assets/img-09.jpg" alt="榆木" loading="lazy"></span></button><button type="button" class="swatch" data-i="10" data-wood="榆木"><span class="swatch-shot"><img src="nfc-scroll-assets/img-10.jpg" alt="榆木" loading="lazy"></span></button><button type="button" class="swatch" data-i="11" data-wood="榆木"><span class="swatch-shot"><img src="nfc-scroll-assets/img-11.jpg" alt="榆木" loading="lazy"></span></button></div></div></div>
+        <div class="wood-row" data-cat="柚木"><div class="wood-label">柚木</div><div class="wood-scroll"><div class="wood-track"><button type="button" class="swatch" data-i="12" data-wood="柚木"><span class="swatch-shot"><img src="nfc-scroll-assets/img-12.jpg" alt="柚木" loading="lazy"></span></button><button type="button" class="swatch" data-i="13" data-wood="柚木"><span class="swatch-shot"><img src="nfc-scroll-assets/img-13.jpg" alt="柚木" loading="lazy"></span></button><button type="button" class="swatch" data-i="14" data-wood="柚木"><span class="swatch-shot"><img src="nfc-scroll-assets/img-14.jpg" alt="柚木" loading="lazy"></span></button><button type="button" class="swatch" data-i="15" data-wood="柚木"><span class="swatch-shot"><img src="nfc-scroll-assets/img-15.jpg" alt="柚木" loading="lazy"></span></button><button type="button" class="swatch" data-i="12" data-wood="柚木"><span class="swatch-shot"><img src="nfc-scroll-assets/img-12.jpg" alt="柚木" loading="lazy"></span></button><button type="button" class="swatch" data-i="13" data-wood="柚木"><span class="swatch-shot"><img src="nfc-scroll-assets/img-13.jpg" alt="柚木" loading="lazy"></span></button><button type="button" class="swatch" data-i="14" data-wood="柚木"><span class="swatch-shot"><img src="nfc-scroll-assets/img-14.jpg" alt="柚木" loading="lazy"></span></button><button type="button" class="swatch" data-i="15" data-wood="柚木"><span class="swatch-shot"><img src="nfc-scroll-assets/img-15.jpg" alt="柚木" loading="lazy"></span></button></div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="page-foot">
+    <div class="foot-summary" id="footSummary">
+      <p class="foot-name" id="footName">胡桃木 01</p>
+      <p class="foot-meta" id="footMeta">胡桃木 · 自然混拼</p>
+      <p class="foot-note">样板色相可核对，完整工艺只对授权工厂开放。</p>
+    </div>
+    <button type="button" class="lib-entry" id="openLibrary">查看全部色卡<span class="chev" aria-hidden="true">›</span></button>
+    <div class="foot-brand">
+      <div class="foot-mark">
+        <span class="foot-city">上海</span>
+        <img class="foot-logo" src="nfc-scroll-assets/df-lab-logo.png?v=2" alt="DF-LAB" width="272" height="40">
+      </div>
+      <p class="meta">上海·DF-LAB 色彩数据库</p>
+      <p class="foot-icp"><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">沪ICP备2026039729号-1</a></p>
+    </div>
+  </footer>
+  <button type="button" class="to-top" id="toTop" aria-label="回到顶部">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M12 19V6"/>
+      <path d="M6.5 11.5 12 6l5.5 5.5"/>
+    </svg>
+  </button>
+</div>
+
+
+<div class="library" id="library" hidden>
+  <div class="library-bar">
+    <button type="button" class="library-back" id="closeLibrary">返回</button>
+    <p class="library-title">全部色卡</p>
+    <p class="library-count" id="libraryCount"></p>
   </div>
-</dialog>
-<p id="status" class="sr" aria-live="polite"></p>
+  <div class="wood-filters" id="libraryFilters" role="tablist" aria-label="总库木种"></div>
+  <div class="library-grid" id="libraryGrid"></div>
+</div>
 
 <script>
+/* v=51 gesture polish 2026-10-27：宏图横滑锁页滚、木种行横滑锁页滚、吸附避让手势中 */
 (function () {
-  'use strict';
+  var BIG = 1, SMALL = 0.55, SMOOTH = 0.224;
+  var ALL = [];
+  for (var i = 0; i < 16; i++) ALL.push('nfc-scroll-assets/img-' + String(i).padStart(2, '0') + '.jpg');
 
-  var RESERVED = { about: 1, contact: 1, top: 1, disclaimer: 1 };
-  var state = { items: [], query: '', tag: '' };
-  var dialog = document.getElementById('sheet');
-  var grid = document.getElementById('grid');
-  var tagsEl = document.getElementById('tags');
-  var input = document.getElementById('q');
-  var current = null;
+  var zoom = document.getElementById('zoom');
+  var mainCard = document.getElementById('mainCard');
+  var macroCard = document.getElementById('macroCard');
+  var mainImg = document.getElementById('mainImg');
+  var macroImg0 = document.getElementById('macroImg0');
+  var macroImg1 = document.getElementById('macroImg1');
+  var shell = document.getElementById('macroShell');
+  var track = document.getElementById('macroTrack');
+  var dots = Array.prototype.slice.call(document.querySelectorAll('#macroDots i'));
+  var libSub = document.getElementById('libSub');
+  var swatchesRoot = document.getElementById('swatches');
 
-  function hexOf(value) {
-    return /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(value || '') ? value : '';
-  }
+  function clamp(n,a,b){ return Math.max(a, Math.min(b, n)); }
+  function lerp(a,b,t){ return a + (b - a) * t; }
+  function easeInOutCubic(t){ return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2, 3)/2; }
 
-  function srcOf(value) {
-    if (!value || typeof value !== 'string') return '';
-    if (value.indexOf('data:image/') === 0) return value;
-    if (/^https?:\/\//i.test(value)) return value;
-    if (/^[\w./-]+$/.test(value) && value.indexOf('..') === -1) return value;
-    return '';
-  }
-
-  function findItem(code) {
-    for (var i = 0; i < state.items.length; i++) {
-      if (state.items[i].code === code) return state.items[i];
+  var audioCtx = null;
+  var audioReady = false;
+  var ratchetBuf = null;
+  var ratchetLoading = null;
+  function ensureAudio(){
+    if (!audioCtx) {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      audioCtx = new AC();
     }
-    return null;
-  }
-
-  function hashCode() {
-    var raw = location.hash.replace(/^#/, '');
-    if (!raw) return '';
-    try { raw = decodeURIComponent(raw); } catch (e) {}
-    if (RESERVED[raw]) return '';
-    return raw;
-  }
-
-  var PUBLIC_ORIGIN = 'https://shanghaidflab.cn';
-
-  function cardUrl(code) {
-    return PUBLIC_ORIGIN + '/#' + encodeURIComponent(code);
-  }
-
-  function setPublicUrl(code) {
-    var href = code ? cardUrl(code) : PUBLIC_ORIGIN + '/';
-    var canonical = document.getElementById('canonical');
-    if (canonical) canonical.setAttribute('href', href);
-    var og = document.querySelector('meta[property="og:url"]');
-    if (og) og.setAttribute('content', href);
-  }
-
-  function shareLine(item) {
-    return item.name + ' · ' + item.code + '｜上海·DF-LAB 色彩数据库';
-  }
-
-  function shareText(item) {
-    return shareLine(item) + '\n屏显仅供参考，落地以打样为准。\n' + cardUrl(item.code);
-  }
-
-  function setStatus(text) {
-    document.getElementById('status').textContent = text || '';
-  }
-
-  function copyText(text) {
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      return navigator.clipboard.writeText(text);
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    if (!ratchetLoading && !ratchetBuf) {
+      ratchetLoading = fetch('nfc-scroll-assets/ratchet-tick.wav')
+        .then(function(r){ return r.arrayBuffer(); })
+        .then(function(ab){ return audioCtx.decodeAudioData(ab); })
+        .then(function(buf){ ratchetBuf = buf; audioReady = true; })
+        .catch(function(){ ratchetLoading = null; });
     }
-    return new Promise(function (resolve, reject) {
-      var area = document.createElement('textarea');
-      area.value = text;
-      area.setAttribute('readonly', '');
-      area.style.position = 'fixed';
-      area.style.left = '-9999px';
-      document.body.appendChild(area);
-      area.select();
-      try {
-        document.execCommand('copy') ? resolve() : reject(new Error('copy'));
-      } catch (err) {
-        reject(err);
-      }
-      document.body.removeChild(area);
+  }
+  function playRatchetSample(){
+    if (!audioCtx || !ratchetBuf) return false;
+    var src = audioCtx.createBufferSource();
+    src.buffer = ratchetBuf;
+    // 轻微提速 + 高通，更清脆
+    src.playbackRate.value = 1.18;
+    var hp = audioCtx.createBiquadFilter();
+    hp.type = 'highpass'; hp.frequency.value = 900; hp.Q.value = 0.7;
+    var shelf = audioCtx.createBiquadFilter();
+    shelf.type = 'highshelf'; shelf.frequency.value = 2800; shelf.gain.value = 5.5;
+    var g = audioCtx.createGain();
+    var t0 = audioCtx.currentTime;
+    // 极短起音保清脆，仍防破音
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(1.05, t0 + 0.0018);
+    g.gain.exponentialRampToValueAtTime(0.001, t0 + Math.min(0.08, ratchetBuf.duration / 1.18));
+    src.connect(hp); hp.connect(shelf); shelf.connect(g); g.connect(audioCtx.destination);
+    src.start(t0);
+    return true;
+  }
+  function playMech(kind){
+    if (!audioCtx) return;
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume().then(function(){ playMech(kind); });
+      return;
+    }
+    ensureAudio();
+    if (kind === 'tick' || kind === 'ratchet') {
+      if (playRatchetSample()) return;
+      // 样本未就绪时短暂退回轻金属哒
+      var tn = audioCtx.currentTime + 0.004;
+      var o = audioCtx.createOscillator();
+      o.type = 'triangle';
+      o.frequency.setValueAtTime(1800, tn);
+      o.frequency.exponentialRampToValueAtTime(700, tn + 0.03);
+      var g = audioCtx.createGain();
+      g.gain.setValueAtTime(0.0001, tn);
+      g.gain.exponentialRampToValueAtTime(0.12, tn + 0.003);
+      g.gain.exponentialRampToValueAtTime(0.001, tn + 0.03);
+      o.connect(g); g.connect(audioCtx.destination);
+      o.start(tn); o.stop(tn + 0.03);
+      return;
+    }
+    // 点选保留轻咔哒
+    var t0 = audioCtx.currentTime + 0.006;
+    var dur = 0.042;
+    var osc = audioCtx.createOscillator();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(88, t0);
+    osc.frequency.exponentialRampToValueAtTime(52, t0 + dur * 0.85);
+    var og = audioCtx.createGain();
+    og.gain.setValueAtTime(0.0001, t0);
+    og.gain.exponentialRampToValueAtTime(0.14, t0 + 0.005);
+    og.gain.exponentialRampToValueAtTime(0.001, t0 + dur);
+    osc.connect(og); og.connect(audioCtx.destination);
+    osc.start(t0); osc.stop(t0 + dur);
+  }
+  function unlockAudio(){
+    ensureAudio();
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+  }
+  ['pointerdown','touchstart','click'].forEach(function(ev){
+    document.addEventListener(ev, unlockAudio, { once:false, passive:true });
+  });
+
+  var macroIndex = 0;
+  function setMacroIndex(i, withSound){
+    macroIndex = i ? 1 : 0;
+    track.style.transform = 'translate3d(' + (-macroIndex * 50) + '%,0,0)';
+    dots.forEach(function(d,n){ d.classList.toggle('on', n === macroIndex); });
+    if (withSound) { ensureAudio(); playMech(); }
+  }
+
+  (function bindMacroSwipe(){
+    var x0=0,y0=0,dx=0,dy=0,mode=null,width=0,ticked=false,lockY=0,pinRaf=0,ending=false;
+    window.__macroSwipeLock = false;
+    window.__macroLockY = 0;
+    window.__macroParkCooldown = false;
+    function pinScroll(){
+      if (!window.__macroSwipeLock) return;
+      if (window.scrollY !== lockY) window.scrollTo(0, lockY);
+      pinRaf = requestAnimationFrame(pinScroll);
+    }
+    function startPin(){
+      if (pinRaf) return;
+      pinRaf = requestAnimationFrame(pinScroll);
+    }
+    function stopPin(){
+      if (pinRaf) { cancelAnimationFrame(pinRaf); pinRaf = 0; }
+    }
+    function lockHorizontal(){
+      if (window.__macroSwipeLock) return;
+      window.__macroSwipeLock = true;
+      lockY = window.scrollY;
+      window.__macroLockY = lockY;
+      shell.style.touchAction = 'none';
+      startPin();
+    }
+    function unlockHorizontal(delay){
+      stopPin();
+      if (window.scrollY !== lockY) window.scrollTo(0, lockY);
+      shell.style.touchAction = '';
+      window.__macroParkCooldown = true;
+      var d = typeof delay === 'number' ? delay : 0;
+      setTimeout(function(){
+        window.__macroSwipeLock = false;
+        // 宏图松手后短冷却，避免 park 立刻拽一下
+        setTimeout(function(){ window.__macroParkCooldown = false; }, 320);
+      }, d);
+    }
+    shell.addEventListener('pointerdown', function(e){
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      ending=false; mode=null; dx=0; dy=0; ticked=false;
+      x0=e.clientX; y0=e.clientY; width=shell.clientWidth||1;
+      lockY = window.scrollY;
+      track.classList.add('is-drag');
+      try { shell.setPointerCapture(e.pointerId); } catch(_){}
+      ensureAudio();
     });
-  }
-
-  function matches(item) {
-    if (state.tag) {
-      var tags = item.tags || [];
-      if (tags.indexOf(state.tag) === -1) return false;
+    shell.addEventListener('pointermove', function(e){
+      dx=e.clientX-x0; dy=e.clientY-y0;
+      if (mode===null){
+        if (Math.abs(dx)<5 && Math.abs(dy)<5) return;
+        // 略偏横：横分量不弱于竖时判横滑，减少斜滑漏锁
+        mode = Math.abs(dx) >= Math.abs(dy) * 0.85 ? 'h' : 'v';
+        if (mode==='v'){
+          track.classList.remove('is-drag');
+          try { shell.releasePointerCapture(e.pointerId); } catch(_){}
+          return;
+        }
+        lockHorizontal();
+      }
+      if (mode!=='h') return;
+      e.preventDefault();
+      if (window.scrollY !== lockY) window.scrollTo(0, lockY);
+      var base=-macroIndex*width;
+      // 机械阻尼：越拖越沉，边缘强回弹
+      var resist = 0.55;
+      if ((macroIndex===0&&dx>0)||(macroIndex===1&&dx<0)) resist = 0.22;
+      var next=base+dx*resist;
+      track.style.transform='translate3d('+next+'px,0,0)';
+      // 过半程提前咔哒，增强机械感
+      if (!ticked && Math.abs(dx) > width*0.28) {
+        ticked = true;
+        playMech('tick');
+      }
+    }, { passive:false });
+    shell.addEventListener('touchmove', function(e){
+      if (mode==='h' && e.cancelable) e.preventDefault();
+    }, { passive:false });
+    function end(){
+      if (ending) return;
+      ending = true;
+      track.classList.remove('is-drag');
+      var wasH = mode==='h';
+      if (mode==='h'){
+        // 更早切换：阈值 18% 就翻页
+        var threshold = Math.max(28, width * 0.18);
+        var nextIndex = macroIndex;
+        if (dx < -threshold) nextIndex = 1;
+        else if (dx > threshold) nextIndex = 0;
+        if (nextIndex !== macroIndex) {
+          setMacroIndex(nextIndex, true);
+        } else {
+          setMacroIndex(macroIndex, false);
+          playMech('tick'); // 回弹也给一声
+        }
+      }
+      mode=null; ticked=false;
+      if (wasH) {
+        unlockHorizontal(420);
+      } else {
+        stopPin();
+        shell.style.touchAction = '';
+        window.__macroSwipeLock = false;
+      }
+      setTimeout(function(){ ending = false; }, 0);
     }
-    var q = state.query.trim().toLowerCase();
-    if (!q) return true;
-    if ((item.name || '').toLowerCase().indexOf(q) !== -1) return true;
-    if ((item.code || '').toLowerCase().indexOf(q) !== -1) return true;
-    var list = item.tags || [];
-    for (var i = 0; i < list.length; i++) {
-      if (String(list[i]).toLowerCase().indexOf(q) !== -1) return true;
+    shell.addEventListener('pointerup', end);
+    shell.addEventListener('pointercancel', end);
+    shell.addEventListener('lostpointercapture', function(){
+      if (mode==='h' || window.__macroSwipeLock) end();
+    });
+  })();
+
+  // 任一横滑锁期间钉住页滚，防止系统惯性/斜滑把 scrollY 拖跑
+  window.addEventListener('scroll', function(){
+    if (window.__macroSwipeLock && typeof window.__macroLockY === 'number') {
+      if (window.scrollY !== window.__macroLockY) window.scrollTo(0, window.__macroLockY);
     }
-    return false;
+    if (window.__woodSwipeLock && typeof window.__woodLockY === 'number') {
+      if (window.scrollY !== window.__woodLockY) window.scrollTo(0, window.__woodLockY);
+    }
+  }, {passive:true});
+
+  function styleCard(el, scale, emphasis){
+    var s = scale>=0.995?1:(scale<=SMALL+0.005?SMALL:+scale.toFixed(4));
+    var y=lerp(6,24,emphasis), blur=lerp(14,44,emphasis);
+    el.style.transform='scale('+s+')';
+    el.style.borderRadius=lerp(14,8,emphasis).toFixed(2)+'px';
+    el.style.boxShadow='0 '+(y*0.35).toFixed(1)+'px '+(blur*0.4).toFixed(1)+'px rgba(0,0,0,'+lerp(0.05,0.12,emphasis).toFixed(3)+'),0 '+y.toFixed(1)+'px '+blur.toFixed(1)+'px rgba(0,0,0,'+lerp(0.07,0.2,emphasis).toFixed(3)+')';
   }
 
-  function clearNode(node) {
-    while (node.firstChild) node.removeChild(node.firstChild);
+  var smoothP=0, targetP=0, smoothing=false;
+  function readTargetP(){
+    var pair=document.getElementById('pair');
+    var rect=(pair||zoom).getBoundingClientRect();
+    var start=window.innerHeight*0.15;
+    var end=window.innerHeight*0.55;
+    var p=(start-rect.top)/(start+end+Math.max(rect.height*0.35,1));
+    return easeInOutCubic(clamp(p,0,1));
+  }
+  function applyP(p){
+    styleCard(mainCard, lerp(BIG,SMALL,p), 1-p);
+    styleCard(macroCard, lerp(SMALL,BIG,p), p);
+  }
+  function tick(){
+    targetP=readTargetP();
+    smoothP+=(targetP-smoothP)*SMOOTH;
+    if (Math.abs(targetP-smoothP)<0.0008) smoothP=targetP;
+    applyP(smoothP);
+    parkMacroIfNeeded();
+    if (Math.abs(targetP-smoothP)>0.0008) requestAnimationFrame(tick);
+    else {
+      smoothing=false;
+      parkMacroIfNeeded();
+    }
   }
 
-  function addRow(dl, label, value) {
-    var dt = document.createElement('dt');
-    dt.textContent = label;
-    var dd = document.createElement('dd');
-    dd.textContent = value;
-    dl.appendChild(dt);
-    dl.appendChild(dd);
+  // 第二张图靠近顶部时吸附，便于预览特写
+  var macroParked = false;
+  var parkLock = false;
+  function parkMacroIfNeeded(){
+    if (parkLock || window.__macroSwipeLock || window.__woodSwipeLock || window.__macroParkCooldown) return;
+    var macro = document.getElementById('macroCard');
+    if (!macro) return;
+    var rect = macro.getBoundingClientRect();
+    var safeTop = 12 + (parseInt(getComputedStyle(document.documentElement).getPropertyValue('env(safe-area-inset-top)')) || 0);
+    // 目标：特写顶边停在距视口顶部约 56~72px（避开顶栏观感）
+    var targetTop = Math.max(52, Math.min(72, window.innerHeight * 0.08));
+    var dist = rect.top - targetTop;
+    // 进入吸附带：特写顶边靠近目标，且已放大；过小位移不吸附，避免顶附近细抖被拽
+    var absDist = Math.abs(dist);
+    var inBand = absDist >= 10 && absDist < 26 && rect.top < window.innerHeight * 0.42;
+    var enlarged = (smoothP || 0) > 0.48;
+    if (inBand && enlarged && !macroParked) {
+      macroParked = true;
+      parkLock = true;
+      var delta = rect.top - targetTop;
+      if (Math.abs(delta) < 10) {
+        parkLock = false;
+        return;
+      }
+      var to = window.scrollY + delta;
+      window.scrollTo({ top: to, behavior: 'smooth' });
+      ensureAudio();
+      playMech('tick');
+      setTimeout(function(){ parkLock = false; }, 360);
+    }
+    // 离开吸附带后允许再次吸附
+    if (absDist > 72 || rect.top > window.innerHeight * 0.55) {
+      macroParked = false;
+    }
   }
 
-  function renderTags() {
+  function kick(){ if(smoothing)return; smoothing=true; requestAnimationFrame(tick); }
+  window.addEventListener('scroll', kick, {passive:true});
+  // 松手后再判一次吸附（错开宏图/木种横滑，延迟加长）
+  window.addEventListener('touchend', function(){
+    if (window.__macroSwipeLock || window.__woodSwipeLock || window.__macroParkCooldown) return;
+    setTimeout(parkMacroIfNeeded, 180);
+  }, {passive:true});
+  window.addEventListener('wheel', function(){
+    if (window.__macroSwipeLock || window.__woodSwipeLock) return;
+    setTimeout(parkMacroIfNeeded, 100);
+  }, {passive:true});
+  window.addEventListener('resize', function(){ smoothP=readTargetP(); applyP(smoothP); }, {passive:true});
+
+
+  window.__woodSwipeLock = false;
+  window.__woodLockY = 0;
+
+  Array.prototype.forEach.call(document.querySelectorAll('.wood-scroll'), function(scroller){
+    var last = -1;
+    var lockTimer = null;
+    var wx0=0, wy0=0, wmode=null, wlockY=0, wPinRaf=0;
+    function cardStep(){
+      var card = scroller.querySelector('.swatch');
+      return card ? (card.getBoundingClientRect().width + 10) : 82;
+    }
+    function snapTo(i, smooth){
+      var w = cardStep();
+      var maxI = Math.max(0, scroller.querySelectorAll('.swatch').length - 1);
+      i = Math.max(0, Math.min(maxI, i));
+      scroller.scrollTo({ left: i * w, behavior: smooth ? 'smooth' : 'auto' });
+    }
+    function maybeSnap(){
+      var w = cardStep();
+      if (!w) return;
+      var pos = scroller.scrollLeft;
+      var i = Math.floor(pos / w);
+      var offset = pos - i * w;
+      // 松手吸附，阈值略早一点便于跟手
+      if (offset < w * 0.38) snapTo(i, true);
+      else snapTo(i + 1, true);
+    }
+    function wPin(){
+      if (!window.__woodSwipeLock) return;
+      if (window.scrollY !== wlockY) window.scrollTo(0, wlockY);
+      wPinRaf = requestAnimationFrame(wPin);
+    }
+    function startWPin(){
+      if (wPinRaf) return;
+      wPinRaf = requestAnimationFrame(wPin);
+    }
+    function stopWPin(){
+      if (wPinRaf) { cancelAnimationFrame(wPinRaf); wPinRaf = 0; }
+    }
+    function lockWoodH(){
+      if (window.__woodSwipeLock) return;
+      window.__woodSwipeLock = true;
+      wlockY = window.scrollY;
+      window.__woodLockY = wlockY;
+      scroller.style.touchAction = 'pan-x';
+      startWPin();
+    }
+    function unlockWood(wasH){
+      stopWPin();
+      scroller.style.touchAction = '';
+      if (wasH && window.scrollY !== wlockY) window.scrollTo(0, wlockY);
+      if (wasH) {
+        setTimeout(function(){ window.__woodSwipeLock = false; }, 180);
+      } else {
+        window.__woodSwipeLock = false;
+      }
+    }
+    scroller.addEventListener('touchstart', function(e){
+      if (!e.touches || !e.touches[0]) return;
+      wmode = null;
+      wx0 = e.touches[0].clientX;
+      wy0 = e.touches[0].clientY;
+      wlockY = window.scrollY;
+    }, {passive:true});
+    scroller.addEventListener('touchmove', function(e){
+      if (!e.touches || !e.touches[0]) return;
+      var tdx = e.touches[0].clientX - wx0;
+      var tdy = e.touches[0].clientY - wy0;
+      if (wmode === null){
+        if (Math.abs(tdx) < 6 && Math.abs(tdy) < 6) return;
+        wmode = Math.abs(tdx) >= Math.abs(tdy) * 0.85 ? 'h' : 'v';
+        if (wmode === 'h') {
+          lockWoodH();
+        } else {
+          scroller.style.touchAction = 'pan-y';
+        }
+      }
+      if (wmode === 'h') {
+        // 不 preventDefault，保留 overflow-x 原生横滑；只钉住页滚 + pan-x
+        if (window.scrollY !== wlockY) window.scrollTo(0, wlockY);
+      }
+    }, {passive:true});
+    function woodEnd(){
+      var wasH = wmode === 'h';
+      wmode = null;
+      unlockWood(wasH);
+      if (lockTimer) clearTimeout(lockTimer);
+      setTimeout(maybeSnap, 30);
+    }
+    scroller.addEventListener('scroll', function(){
+      var w = cardStep();
+      var i = Math.round(scroller.scrollLeft / Math.max(w,1));
+      if (i !== last) {
+        last = i;
+        ensureAudio();
+        playMech('tick');
+      }
+      if (lockTimer) clearTimeout(lockTimer);
+      lockTimer = setTimeout(maybeSnap, 120);
+    }, {passive:true});
+    scroller.addEventListener('touchend', woodEnd, {passive:true});
+    scroller.addEventListener('touchcancel', woodEnd, {passive:true});
+    scroller.addEventListener('pointerup', function(){
+      if (lockTimer) clearTimeout(lockTimer);
+      setTimeout(maybeSnap, 30);
+    }, {passive:true});
+  });
+
+  // 色卡点选
+  Array.prototype.forEach.call(swatchesRoot.querySelectorAll('.swatch'), function(el){
+    el.addEventListener('click', function(){
+      var i = +el.getAttribute('data-i') || 0;
+      var wood = el.getAttribute('data-wood') || '';
+      var trackEl = el.parentElement;
+      var slot = trackEl ? Array.prototype.indexOf.call(trackEl.children, el) : 0;
+      Array.prototype.forEach.call(swatchesRoot.querySelectorAll('.swatch'), function(x){ x.classList.remove('on'); });
+      el.classList.add('on');
+      mainImg.src = ALL[i];
+      macroImg0.src = ALL[i];
+      macroImg1.src = ALL[(i+1)%ALL.length];
+      setMacroIndex(0, false);
+      if (libSub) libSub.textContent = wood + ' · ' + String(slot+1).padStart(2,'0');
+      var footName = document.getElementById('footName');
+      var footMeta = document.getElementById('footMeta');
+      var label = wood + ' ' + String(slot+1).padStart(2,'0');
+      if (footName) footName.textContent = label;
+      if (footMeta) footMeta.textContent = wood + ' · 自然混拼';
+      ensureAudio(); playMech();
+      window.scrollTo(0, 0);
+    });
+  });
+  if (libSub) libSub.textContent = '胡桃木 · 01';
+
+  (function bindWoodFilter(){
+    var rows = swatchesRoot.querySelectorAll('.wood-row');
+    var bar = document.createElement('div');
+    bar.className = 'wood-filters';
+    bar.setAttribute('role', 'tablist');
+    bar.setAttribute('aria-label', '按木种筛选');
+    var cats = ['全部'];
+    Array.prototype.forEach.call(rows, function(row){
+      var c = row.getAttribute('data-cat');
+      if (c && cats.indexOf(c) < 0) cats.push(c);
+    });
+    cats.forEach(function(name, idx){
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'wood-chip' + (idx === 0 ? ' on' : '');
+      b.textContent = name;
+      b.addEventListener('click', function(){
+        Array.prototype.forEach.call(bar.querySelectorAll('.wood-chip'), function(x){ x.classList.remove('on'); });
+        b.classList.add('on');
+        Array.prototype.forEach.call(rows, function(row){
+          row.hidden = !(name === '全部' || row.getAttribute('data-cat') === name);
+        });
+      });
+      bar.appendChild(b);
+    });
+    swatchesRoot.parentNode.insertBefore(bar, swatchesRoot);
+    Array.prototype.forEach.call(swatchesRoot.querySelectorAll('.swatch'), function(el){
+      var wood = el.getAttribute('data-wood') || '';
+      var trackEl = el.parentElement;
+      var slot = trackEl ? Array.prototype.indexOf.call(trackEl.children, el) : 0;
+      var cap = document.createElement('span');
+      cap.className = 'swatch-name';
+      cap.textContent = wood + ' ' + String(slot + 1).padStart(2, '0');
+      el.appendChild(cap);
+    });
+  })();
+
+
+  (function bindLibrary(){
+    var lib = document.getElementById('library');
+    var grid = document.getElementById('libraryGrid');
+    var filters = document.getElementById('libraryFilters');
+    var countEl = document.getElementById('libraryCount');
+    var openBtn = document.getElementById('openLibrary');
+    var closeBtn = document.getElementById('closeLibrary');
+    if (!lib || !grid || !openBtn) return;
     var seen = {};
-    var list = [];
-    state.items.forEach(function (item) {
-      (item.tags || []).forEach(function (tag) {
-        if (!tag || seen[tag]) return;
-        seen[tag] = 1;
-        list.push(String(tag));
+    var items = [];
+    Array.prototype.forEach.call(swatchesRoot.querySelectorAll('.swatch'), function(el){
+      var wood = el.getAttribute('data-wood') || '';
+      var i = el.getAttribute('data-i') || '0';
+      var key = wood + ':' + i;
+      if (seen[key]) return;
+      seen[key] = true;
+      var img = el.querySelector('img');
+      var nameEl = el.querySelector('.swatch-name');
+      items.push({
+        wood: wood,
+        i: i,
+        src: img ? img.getAttribute('src') : '',
+        name: nameEl ? nameEl.textContent : wood,
+        swatch: el
       });
     });
-    list.sort(function (a, b) { return a.localeCompare(b, 'zh'); });
-    clearNode(tagsEl);
-    if (!list.length) {
-      tagsEl.hidden = true;
-      return;
-    }
-    tagsEl.hidden = false;
-    var all = document.createElement('button');
-    all.type = 'button';
-    all.textContent = '全部';
-    all.setAttribute('aria-pressed', state.tag ? 'false' : 'true');
-    all.addEventListener('click', function () {
-      state.tag = '';
-      render();
+    items.forEach(function(item){
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'lib-card';
+      b.setAttribute('data-wood', item.wood);
+      var im = document.createElement('img');
+      im.src = item.src;
+      im.alt = item.name;
+      var cap = document.createElement('span');
+      cap.className = 'lib-card-name';
+      cap.textContent = item.name;
+      b.appendChild(im);
+      b.appendChild(cap);
+      b.addEventListener('click', function(){
+        savedTop = lib.scrollTop;
+        closeLib();
+        backBtn.classList.add('show');
+        item.swatch.click();
+      });
+      grid.appendChild(b);
+      item.card = b;
     });
-    tagsEl.appendChild(all);
-    list.forEach(function (tag) {
-      var btn = document.createElement('button');
-      btn.type = 'button';
-      btn.textContent = tag;
-      btn.setAttribute('aria-pressed', state.tag === tag ? 'true' : 'false');
-      btn.addEventListener('click', function () {
-        state.tag = tag;
-        render();
-      });
-      tagsEl.appendChild(btn);
+    var cats = ['全部'];
+    items.forEach(function(item){
+      if (cats.indexOf(item.wood) < 0) cats.push(item.wood);
     });
-  }
-
-  function renderGrid() {
-    clearNode(grid);
-    var shown = state.items.filter(matches);
-    if (!state.items.length) {
-      var emptyLib = document.createElement('div');
-      emptyLib.className = 'empty';
-      var p0 = document.createElement('p');
-      p0.textContent = '色卡正在按规范入库。稍后回来，或联系 DF-LAB 了解打样。';
-      emptyLib.appendChild(p0);
-      grid.appendChild(emptyLib);
-      return;
-    }
-    if (!shown.length) {
-      var empty = document.createElement('div');
-      empty.className = 'empty';
-      var p1 = document.createElement('p');
-      p1.textContent = '没有找到匹配的色卡。换个色名、编号或标签试试；或浏览全部色卡。';
-      var again = document.createElement('button');
-      again.type = 'button';
-      again.textContent = '浏览全部色卡';
-      again.addEventListener('click', function () {
-        state.query = '';
-        state.tag = '';
-        input.value = '';
-        render();
-        input.focus();
+    function applyFilter(name){
+      var n = 0;
+      items.forEach(function(item){
+        var show = name === '全部' || item.wood === name;
+        item.card.hidden = !show;
+        if (show) n++;
       });
-      empty.appendChild(p1);
-      empty.appendChild(again);
-      grid.appendChild(empty);
-      return;
+      if (countEl) countEl.textContent = n + ' 色';
     }
-    shown.forEach(function (item) {
-      var btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'card';
-      btn.dataset.code = item.code;
-      var sw = document.createElement('span');
-      sw.className = 'swatch';
-      var color = hexOf(item.color);
-      if (color) sw.style.backgroundColor = color;
-      var src = srcOf(item.image);
-      if (src) {
-        var img = document.createElement('img');
-        img.alt = item.name || item.code || '';
-        img.loading = 'lazy';
-        img.src = src;
-        img.addEventListener('error', function () { img.remove(); });
-        sw.appendChild(img);
-      }
-      var info = document.createElement('span');
-      info.className = 'info';
-      var name = document.createElement('span');
-      name.className = 'name';
-      name.textContent = item.name || '';
-      var code = document.createElement('span');
-      code.className = 'code';
-      code.textContent = item.code || '';
-      var finish = document.createElement('span');
-      finish.className = 'finish';
-      finish.textContent = item.finish || '';
-      info.appendChild(name);
-      info.appendChild(code);
-      info.appendChild(finish);
-      btn.appendChild(sw);
-      btn.appendChild(info);
-      btn.addEventListener('click', function () { openDetail(item.code, false); });
-      grid.appendChild(btn);
+    cats.forEach(function(name, idx){
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'wood-chip' + (idx === 0 ? ' on' : '');
+      b.textContent = name;
+      b.addEventListener('click', function(){
+        Array.prototype.forEach.call(filters.querySelectorAll('.wood-chip'), function(x){ x.classList.remove('on'); });
+        b.classList.add('on');
+        applyFilter(name);
+      });
+      filters.appendChild(b);
     });
-  }
-
-  function render() {
-    renderTags();
-    renderGrid();
-    grid.setAttribute('aria-busy', 'false');
-  }
-
-  function renderDetail(item) {
-    current = item;
-    document.getElementById('sheet-name').textContent = item.name || '';
-    var photo = document.getElementById('sheet-photo');
-    clearNode(photo);
-    var color = hexOf(item.color);
-    photo.style.backgroundColor = color || '#2a261f';
-    var src = srcOf(item.image);
-    if (src) {
-      var img = document.createElement('img');
-      img.alt = item.name || item.code || '';
-      img.src = src;
-      photo.appendChild(img);
+    applyFilter('全部');
+    var savedTop = 0;
+    var backBtn = document.createElement('button');
+    backBtn.type = 'button';
+    backBtn.className = 'back-lib';
+    backBtn.id = 'backToLibrary';
+    backBtn.textContent = '返回全部色卡';
+    document.body.appendChild(backBtn);
+    function openLib(keep){
+      lib.hidden = false;
+      lib.classList.add('open');
+      backBtn.classList.remove('show');
+      document.body.style.overflow = 'hidden';
+      lib.scrollTop = keep ? savedTop : 0;
     }
-    var dl = document.getElementById('sheet-meta');
-    clearNode(dl);
-    addRow(dl, '编号', item.code || '');
-    addRow(dl, '工艺', item.finish || '');
-    var dt = document.createElement('dt');
-    dt.textContent = '色值';
-    var dd = document.createElement('dd');
-    var hexWrap = document.createElement('span');
-    hexWrap.className = 'hex';
-    if (color) {
-      var chip = document.createElement('span');
-      chip.className = 'chip';
-      chip.style.backgroundColor = color;
-      hexWrap.appendChild(chip);
+    function closeLib(){
+      lib.classList.remove('open');
+      lib.hidden = true;
+      document.body.style.overflow = '';
     }
-    hexWrap.appendChild(document.createTextNode(color || item.color || ''));
-    dd.appendChild(hexWrap);
-    dl.appendChild(dt);
-    dl.appendChild(dd);
-    if (item.tags && item.tags.length) addRow(dl, '标签', item.tags.join('、'));
-    addRow(dl, '上传', item.uploader || 'DF-LAB');
-    document.getElementById('share-l1').textContent = shareLine(item);
-    var link = document.getElementById('share-link');
-    var url = cardUrl(item.code);
-    link.href = url;
-    link.textContent = url;
-    setPublicUrl(item.code);
-  }
+    openBtn.addEventListener('click', function(){ openLib(false); });
+    closeBtn.addEventListener('click', closeLib);
+    backBtn.addEventListener('click', function(){ openLib(true); });
+  })();
 
-  function openDetail(code, fromHistory) {
-    var item = findItem(code);
-    if (!item) return;
-    renderDetail(item);
-    if (!dialog.open) dialog.showModal();
-    if (!fromHistory) {
-      var next = '#' + encodeURIComponent(code);
-      if (location.hash !== next) history.pushState({ sheet: code }, '', next);
+  styleCard(mainCard, BIG, 1);
+  styleCard(macroCard, SMALL, 0);
+  smoothP = readTargetP(); applyP(smoothP);
+
+  window.__NFC_CHECK__ = {
+    ok: swatchesRoot && swatchesRoot.querySelectorAll('.swatch').length >= 16,
+    rows: swatchesRoot ? swatchesRoot.querySelectorAll('.wood-row').length : 0,
+    swatches: swatchesRoot ? swatchesRoot.querySelectorAll('.swatch').length : 0,
+    scrollRows: swatchesRoot ? swatchesRoot.querySelectorAll('.wood-scroll').length : 0
+  };
+  console.log('[自检]', window.__NFC_CHECK__);
+
+  (function bindToTop(){
+    var btn = document.getElementById('toTop');
+    if (!btn) return;
+    function sync(){
+      btn.classList.toggle('show', window.scrollY > 220);
     }
-  }
+    window.addEventListener('scroll', sync, { passive:true });
+    sync();
+    btn.addEventListener('click', function(){
+      window.scrollTo(0, 0);
+    });
+  })();
 
-  function closeIfOpen() {
-    if (dialog.open) dialog.close();
-  }
-
-  function syncFromLocation() {
-    var code = hashCode();
-    if (code && findItem(code)) {
-      openDetail(code, true);
-      return;
-    }
-    closeIfOpen();
-  }
-
-  document.getElementById('search-form').addEventListener('submit', function (event) {
-    event.preventDefault();
-  });
-  input.addEventListener('input', function () {
-    state.query = input.value;
-    renderGrid();
-  });
-  document.getElementById('close-sheet').addEventListener('click', function () {
-    if (history.state && history.state.sheet) history.back();
-    else closeIfOpen();
-  });
-  dialog.addEventListener('close', function () {
-    setPublicUrl('');
-    if (hashCode() && findItem(hashCode())) {
-      history.replaceState(null, '', location.pathname + location.search);
-    }
-  });
-  window.addEventListener('hashchange', syncFromLocation);
-  window.addEventListener('popstate', syncFromLocation);
-  document.getElementById('share-btn').addEventListener('click', function () {
-    if (!current) return;
-    var text = shareText(current);
-    var url = cardUrl(current.code);
-    var done = function () { setStatus('已复制'); };
-    if (navigator.share) {
-      navigator.share({
-        title: shareLine(current),
-        text: shareLine(current) + '\n屏显仅供参考，落地以打样为准。',
-        url: url
-      }).catch(function (err) {
-        if (err && err.name === 'AbortError') return;
-        copyText(text).then(done).catch(function () { setStatus(''); });
-      });
-      return;
-    }
-    copyText(text).then(done).catch(function () { setStatus(''); });
-  });
-  document.getElementById('copy-code').addEventListener('click', function () {
-    if (!current) return;
-    copyText(current.code).then(function () { setStatus('已复制'); }).catch(function () { setStatus(''); });
-  });
-
-  function showLoadError() {
-    clearNode(grid);
-    var box = document.createElement('div');
-    box.className = 'empty';
-    var p = document.createElement('p');
-    p.textContent = '色卡数据没有加载出来。';
-    box.appendChild(p);
-    grid.appendChild(box);
-    grid.setAttribute('aria-busy', 'false');
-  }
-
-  fetch(new URL('color-library-3.json', document.baseURI).href)
-    .then(function (res) {
-      if (!res.ok) throw new Error('load');
-      return res.json();
-    })
-    .then(function (data) {
-      if (!Array.isArray(data)) throw new Error('shape');
-      state.items = data.filter(function (item) {
-        return item && typeof item === 'object' && item.code;
-      });
-      render();
-      syncFromLocation();
-    })
-    .catch(showLoadError);
 })();
 </script>
 </body>
