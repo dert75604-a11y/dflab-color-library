@@ -1,0 +1,4 @@
+__pycache__/
+*.pyc
+data/sync-report.json
+.venv/

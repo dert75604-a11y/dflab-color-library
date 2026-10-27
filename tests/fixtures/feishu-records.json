@@ -1,0 +1,118 @@
+{
+  "records": [
+    {
+      "record_id": "rec_test_unchecked",
+      "fields": {
+        "code": "F-TEST01",
+        "name": "测试色-勿公开",
+        "树种": "橡木",
+        "finish": "开放漆",
+        "hex": "#112233",
+        "主图": [{"name": "hidden.jpg", "local_path": "tests/fixtures/swatch.jpg"}],
+        "特写": [{"name": "hidden-macro.jpg", "local_path": "tests/fixtures/swatch.jpg"}],
+        "状态": "终板通过",
+        "公开上架": false,
+        "uploader": "DF-LAB",
+        "备注": "内部备注勿出网-配方克数"
+      }
+    },
+    {
+      "record_id": "rec_test_checked_bad_code",
+      "fields": {
+        "code": "F-TEST01",
+        "name": "测试色-勿公开",
+        "树种": "橡木",
+        "finish": "开放漆",
+        "hex": "#112233",
+        "主图": [{"name": "hidden.jpg", "local_path": "tests/fixtures/swatch.jpg"}],
+        "状态": "终板通过",
+        "公开上架": true,
+        "uploader": "DF-LAB",
+        "备注": "内部备注勿出网-配方克数"
+      }
+    },
+    {
+      "record_id": "rec_ok",
+      "fields": {
+        "code": "F-00042",
+        "name": "暖橡",
+        "树种": "橡木",
+        "finish": "开放漆",
+        "hex": "c4a574",
+        "主图": [{"name": "main.jpeg", "local_path": "tests/fixtures/swatch.jpg"}],
+        "特写": [{"name": "macro.png", "local_path": "tests/fixtures/swatch.jpg"}],
+        "状态": "终板通过",
+        "公开上架": true,
+        "uploader": "DF-LAB",
+        "备注": "内部备注勿出网-配方克数"
+      }
+    },
+    {
+      "record_id": "rec_dup",
+      "fields": {
+        "code": "F-00042",
+        "name": "暖橡重复",
+        "树种": "橡木",
+        "finish": "开放漆",
+        "hex": "#000000",
+        "主图": [{"name": "dup.jpg", "local_path": "tests/fixtures/swatch.jpg"}],
+        "状态": "终板通过",
+        "公开上架": true,
+        "uploader": "DF-LAB"
+      }
+    },
+    {
+      "record_id": "rec_no_finish",
+      "fields": {
+        "code": "F-00043",
+        "name": "缺工艺",
+        "树种": "胡桃木",
+        "finish": "",
+        "hex": "#888888",
+        "主图": [{"name": "a.jpg", "local_path": "tests/fixtures/swatch.jpg"}],
+        "状态": "终板通过",
+        "公开上架": true
+      }
+    },
+    {
+      "record_id": "rec_bad_status",
+      "fields": {
+        "code": "F-00044",
+        "name": "还在打样",
+        "树种": "柚木",
+        "finish": "封闭漆",
+        "hex": "#887766",
+        "主图": [{"name": "a.jpg", "local_path": "tests/fixtures/swatch.jpg"}],
+        "状态": "打样中",
+        "公开上架": true,
+        "备注": "内部备注勿出网-配方克数"
+      }
+    },
+    {
+      "record_id": "rec_no_image",
+      "fields": {
+        "code": "F-00045",
+        "name": "缺图",
+        "树种": "橡木",
+        "finish": "开放漆",
+        "hex": "#123456",
+        "主图": [],
+        "状态": "已上架",
+        "公开上架": true
+      }
+    },
+    {
+      "record_id": "rec_listed",
+      "fields": {
+        "code": "f-00046",
+        "name": "已在架",
+        "树种": "其他",
+        "finish": "其他",
+        "主图": [{"name": "plain.jpg", "local_path": "tests/fixtures/swatch.jpg"}],
+        "状态": "已上架",
+        "公开上架": true,
+        "uploader": ""
+      }
+    }
+  ]
+}
