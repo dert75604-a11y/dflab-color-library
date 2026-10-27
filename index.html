@@ -11,7 +11,7 @@
 <meta property="og:url" content="https://shanghaidflab.cn/">
 <link rel="canonical" id="canonical" href="https://shanghaidflab.cn/">
 <title>上海·DF-LAB 色彩数据库</title>
-<!-- 文案来源：from-chatgpt/site-copy-P0.md 。页面只渲染 code / name / color / finish / image / tags / uploader。 -->
+<!-- 文案来源：from-chatgpt/site-copy-P0.md 。页面只渲染 code / name / color / finish / species / image / imageCloseup / tags / uploader。公开上架数据优先读 data/colors.json。 -->
 <style>
 :root {
   --bg: #0e0d0b;
@@ -566,6 +566,8 @@ dd { margin: 0; overflow-wrap: anywhere; }
     if (!q) return true;
     if ((item.name || '').toLowerCase().indexOf(q) !== -1) return true;
     if ((item.code || '').toLowerCase().indexOf(q) !== -1) return true;
+    if ((item.species || '').toLowerCase().indexOf(q) !== -1) return true;
+    if ((item.finish || '').toLowerCase().indexOf(q) !== -1) return true;
     var list = item.tags || [];
     for (var i = 0; i < list.length; i++) {
       if (String(list[i]).toLowerCase().indexOf(q) !== -1) return true;
@@ -716,9 +718,17 @@ dd { margin: 0; overflow-wrap: anywhere; }
       img.src = src;
       photo.appendChild(img);
     }
+    var closeup = srcOf(item.imageCloseup);
+    if (closeup && closeup !== src && closeup.indexOf('data:') !== 0) {
+      var macro = document.createElement('img');
+      macro.alt = (item.name || item.code || '') + ' 特写';
+      macro.src = closeup;
+      photo.appendChild(macro);
+    }
     var dl = document.getElementById('sheet-meta');
     clearNode(dl);
     addRow(dl, '编号', item.code || '');
+    if (item.species) addRow(dl, '树种', item.species);
     addRow(dl, '工艺', item.finish || '');
     var dt = document.createElement('dt');
     dt.textContent = '色值';
@@ -822,19 +832,65 @@ dd { margin: 0; overflow-wrap: anywhere; }
     grid.setAttribute('aria-busy', 'false');
   }
 
-  fetch(new URL('color-library-3.json', document.baseURI).href)
-    .then(function (res) {
+  function projectPublic(item) {
+    if (!item || typeof item !== 'object' || !item.code) return null;
+    if (!item.image || String(item.image).indexOf('data:') === 0) return null;
+    var image = srcOf(item.image);
+    if (!image) return null;
+    var closeup = srcOf(item.imageCloseup);
+    if (closeup && closeup.indexOf('data:') === 0) closeup = '';
+    var tags = [];
+    (item.tags || []).forEach(function (tag) {
+      if (typeof tag === 'string' && tag && tags.indexOf(tag) === -1) tags.push(tag);
+    });
+    return {
+      code: item.code,
+      name: item.name || '',
+      color: item.color || '',
+      finish: item.finish || '',
+      species: item.species || '',
+      image: image,
+      imageCloseup: closeup || '',
+      uploader: item.uploader || 'DF-LAB',
+      tags: tags
+    };
+  }
+
+  function loadJson(url) {
+    return fetch(url).then(function (res) {
       if (!res.ok) throw new Error('load');
       return res.json();
-    })
+    });
+  }
+
+  function useItems(data) {
+    state.items = data;
+    render();
+    syncFromLocation();
+  }
+
+  // Public Feishu export wins when it has cards. An empty list (nothing checked
+  // 公开上架 yet) falls back to the legacy library so this page still opens.
+  loadJson(new URL('data/colors.json', document.baseURI).href)
     .then(function (data) {
-      if (!Array.isArray(data)) throw new Error('shape');
-      state.items = data.filter(function (item) {
-        return item && typeof item === 'object' && item.code;
+      if (!Array.isArray(data) || !data.length) throw new Error('empty');
+      var items = [];
+      data.forEach(function (item) {
+        var next = projectPublic(item);
+        if (next) items.push(next);
       });
-      render();
-      syncFromLocation();
+      if (!items.length) throw new Error('empty');
+      return items;
     })
+    .catch(function () {
+      return loadJson(new URL('color-library-3.json', document.baseURI).href).then(function (data) {
+        if (!Array.isArray(data)) throw new Error('shape');
+        return data.filter(function (item) {
+          return item && typeof item === 'object' && item.code;
+        });
+      });
+    })
+    .then(useItems)
     .catch(showLoadError);
 })();
 </script>

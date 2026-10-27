@@ -2,7 +2,9 @@
 
 免费公开的木作与涂装色彩参考。先对编号，再谈落地。
 
-页面是仓库根目录的静态文件。数据在 `color-library-3.json`。对外文案以 `from-chatgpt/site-copy-P0.md` 为准。
+页面是仓库根目录的静态文件。飞书勾了「公开上架」的色卡写在 `data/colors.json`。这份文件还是空数组时，旧页面回退读 `color-library-3.json`。对外文案以 `from-chatgpt/site-copy-P0.md` 为准。
+
+线上现在是阿里云上的 NFC 预览，不是这个旧检索页，也不是 GitHub Pages。NFC 手势页继续用服务器上的 `index.html` 和 `nfc-scroll-assets`。公开色卡只加数据层。
 
 本仓库只做展示和检索。测色、近邻色差、打板和配方不在这里。
 
@@ -19,6 +21,8 @@ python3 -m http.server 8000
 不要用 `file://` 双击 `index.html`。浏览器会拦住页面读取旁边的 JSON，色卡列表出不来。
 
 ## 如何加一条色卡
+
+线上新色不要手改 JSON。在飞书勾「公开上架」，由下一节的脚本写出 `data/colors.json`。下面只留给回退库 `color-library-3.json`：公开文件还是空数组时，旧检索页才读它。
 
 编辑 `color-library-3.json`，它是一个数组。在数组末尾追加一条。图片优先放进 `images/`，用相对路径；也可以写 `https` 外链。已有条目里的 data URL 仍能显示。新条目不要再塞大段 base64。
 
@@ -48,73 +52,125 @@ python3 -m http.server 8000
 
 拍摄光线、何时不上架、每周节奏，见 `from-chatgpt/content-sop-色卡上传.md`。
 
-## 部署
+## 飞书勾选上架
 
-生产域名是 **https://shanghaidflab.cn** 。分享链接和页面 canonical 都用这个域，例如 `https://shanghaidflab.cn/#F-00001`。
+人在飞书表「样板」里勾「公开上架」。脚本下一轮把勾中的、字段齐全的行写成公开 JSON 和图。取消勾选后，下一轮 JSON 里没有这一条，对应图片也从 `assets/colors/` 删掉。
 
-公网目前查不到 `shanghaidflab.cn` 的 A / AAAA 记录（域名已注册，还没做解析）。在 DNS 生效之前，这个地址打不开是正常的，不是页面没发布。
+表（只读这一张，不要去改别的业务台账）：
 
-仓库里没有 Vercel、Nginx 或单独的构建脚本。线上就是 GitHub Pages，发布源是 `main` 分支的根目录 `/`。
+| 项 | 值 |
+|----|-----|
+| app_token | `AvvUbYVazaJF1PsqNdgcQBgUn4b` |
+| table_id | `tbl8AxaiNxueFhaT` |
+| view | `vewggbVU5M` |
 
-- 仓库：https://github.com/dert75604-a11y/dflab-color-library
-- Pages 默认地址：https://dert75604-a11y.github.io/dflab-color-library/
-- 根目录 `CNAME` 只有一行 `shanghaidflab.cn`，用来把 Pages 的自定义域名设成这个 apex
+会公开的字段：`code`、`name`、`color`（来自 hex）、`finish`、`species`（来自树种）、`image`、`imageCloseup`（有特写才有）、`uploader`、`tags`。`备注` 不写进 JSON，也不进同步报告。图只落成文件，路径像 `/assets/colors/F-00001.jpg`，不塞 base64。
 
-### 1. 本仓如何发布
+一条要同时满足才上架：`公开上架` 为真，`code` 是 `F-` 加五位数字，有 `name`、`finish`、主图，并且 `状态` 是「终板通过」或「已上架」。缺任何一项就跳过。`F-TEST01` 在未勾选时原因是 `not_public`，不会出现。它的编号也不是五位数字，就算误勾，也会因 `code_format` 被丢掉。
 
-没有编译步骤。`index.html`、`color-library-3.json` 和 `images/` 里的图片就是整站。页面用相对路径读 JSON。
+触发方式是定时拉，不是勾选瞬间的 webhook。建议在国内机上每 5 分钟跑一次（机器要能访问飞书开放平台）。勾选后，最迟在这一轮里上站。
 
-合并到 `main` 并推上去之后，GitHub Pages 会把仓库根目录原样发布（根目录有 `.nojekyll`，不会再跑 Jekyll）。浏览器若还是旧页面，强刷一次。
+### 环境变量
 
-Pages 一旦认下自定义域名，`github.io` 地址有时会跳到 `https://shanghaidflab.cn`。DNS 还没指过来时，这个跳转会打开失败。那一段先到域名控制台把记录加上，不要当成站点文件坏了。
+密钥只放环境，不进仓库。
 
-### 2. 在域名控制台添加解析
+| 变量 | 作用 |
+|------|------|
+| `FEISHU_APP_ID` | 飞书应用 App ID。和 `FEISHU_APP_SECRET` 一起换 tenant token |
+| `FEISHU_APP_SECRET` | 飞书应用 App Secret |
+| `FEISHU_TENANT_ACCESS_TOKEN` | 已有的 tenant token。设了就不再用 id/secret |
+| `FEISHU_USER_ACCESS_TOKEN` | 已有的 user token。没设 tenant token 时用它 |
+| `FEISHU_APP_TOKEN` | 默认同上表，一般不用改 |
+| `FEISHU_TABLE_ID` | 默认同上表 |
+| `FEISHU_VIEW_ID` | 默认同上表 |
+| `FEISHU_BASE_URL` | 默认 `https://open.feishu.cn` |
+| `FEISHU_STATUS_ALLOW` | 允许上架的状态，逗号分隔。默认 `终板通过,已上架` |
+| `DEPLOY_SSH_USER` | 登录 `106.15.198.252` 的用户 |
+| `DEPLOY_SSH_KEY` | 私钥路径。不设就用 ssh 默认密钥 |
+| `DEPLOY_HOST` | 默认 `106.15.198.252` |
+| `DEPLOY_PORT` | 默认 `22` |
 
-先在 GitHub 上确认自定义域名，再改 DNS。GitHub 的建议是：先把域名加到这个仓库的 Pages，避免域名还没绑定时被别人占用。账号或仓库的 Pages 域名验证若要求 TXT，值以 GitHub 页面当场显示的为准。
+应用至少要有多维表格只读（`bitable:app:readonly` 或 `base:record:retrieve`），以及附件下载权限。没有这两项，脚本连上也会被飞书拒绝。
 
-仓库 Settings → Pages：
+`--writeback-status` 会把刚上架成功、且状态还不是「已上架」的行改成「已上架」。默认不改表。
 
-- Source：Deploy from a branch，Branch 为 `main`，目录 `/`
-- Custom domain：`shanghaidflab.cn`
-- DNS 生效、证书签发之后，再打开 Enforce HTTPS
+### 本地怎么跑
 
-然后到注册商或 DNS 控制台，给 **`shanghaidflab.cn`** 添加指向 GitHub Pages 的记录。主机名 `@` 表示 apex。
-
-apex `shanghaidflab.cn`（四条 A，再加四条 AAAA）：
-
-| 类型 | 主机 | 记录值 |
-|------|------|--------|
-| A | `@` | `185.199.108.153` |
-| A | `@` | `185.199.109.153` |
-| A | `@` | `185.199.110.153` |
-| A | `@` | `185.199.111.153` |
-| AAAA | `@` | `2606:50c0:8000::153` |
-| AAAA | `@` | `2606:50c0:8001::153` |
-| AAAA | `@` | `2606:50c0:8002::153` |
-| AAAA | `@` | `2606:50c0:8003::153` |
-
-控制台如果支持 ALIAS 或 ANAME，也可以改用一条：主机 `@`，指向 `dert75604-a11y.github.io`。用了 ALIAS 就不要再同时堆一组互相冲突的 A。国内注册商多数没有 ALIAS，用上面的 A + AAAA 即可。
-
-可选 `www`：
-
-| 类型 | 主机 | 记录值 |
-|------|------|--------|
-| CNAME | `www` | `dert75604-a11y.github.io` |
-
-有的控制台要求末尾加点：`dert75604-a11y.github.io.`。仓库 `CNAME` 文件里仍然只写 apex `shanghaidflab.cn`，不要写成 `www`。
-
-加记录之前，先删掉控制台自动生成、指向别处的 `@` A / AAAA，以及会抢 `www` 的旧 CNAME。不要加 `*.shanghaidflab.cn` 这种泛解析。
-
-### 3. 怎样算挂上了
+在仓库根目录：
 
 ```bash
-dig shanghaidflab.cn +noall +answer -t A
-dig shanghaidflab.cn +noall +answer -t AAAA
+python3 -m unittest tests/test_public_colors.py
+
+python3 tools/feishu_public_colors.py sync \
+  --fixture tests/fixtures/feishu-records.json \
+  --dry-run
+
+python3 tools/feishu_public_colors.py sync \
+  --fixture tests/fixtures/feishu-records.json \
+  --out-dir /tmp/dflab-color-preview
 ```
 
-能看到上面的 GitHub Pages 地址后，再打开：
+`--fixture` 不访问飞书。`--dry-run` 只把将要公开的 JSON 打到标准输出，不写文件。正式拉表：
 
-- https://shanghaidflab.cn
-- https://shanghaidflab.cn/#F-00001
+```bash
+export FEISHU_APP_ID=...
+export FEISHU_APP_SECRET=...
+python3 tools/feishu_public_colors.py sync
+```
 
-首页应是「上海·DF-LAB 色彩数据库」。带编号的链接应打开那一条色卡。证书可能要等几分钟到几小时。HTTPS 可用之后，再在 Pages 里勾上 Enforce HTTPS。
+成功后仓库里是 `data/colors.json` 和 `assets/colors/`。旧检索页会优先读这份 JSON；空数组时仍回退 `color-library-3.json`。
+
+### 没有密钥时
+
+云端这次没有可用的飞书表格权限，也没有能登录 `106.15.198.252` 的 SSH 密钥。代码和夹具可以跑，真表和真机部署要等环境变量补上。夹具里的 `F-00042` 能导出；`F-TEST01` 未勾选，不会出现。
+
+## 部署
+
+生产是 **https://shanghaidflab.cn** ，主机 `106.15.198.252`，nginx 根目录 **`/var/www/shanghaidflab`**。只往这个目录拷数据。不要开 GitHub Pages，不要把整仓 rsync 上去，否则会盖掉线上的 NFC `index.html` 和 `nfc-scroll-assets`。
+
+页脚备案 `沪ICP备2026039729号-1` 和站名「上海·DF-LAB 色彩数据库」留在现有 NFC 页上。本脚本不改这两处，除非显式加上 `PATCH_NFC=1`。`PATCH_NFC=1` 也只在确认是 NFC 生产页之后，于 `</body>` 前插入一行：
+
+```html
+<script src="assets/nfc-public-colors.js"></script>
+```
+
+这行脚本在 `data/colors.json` 有公开色时，重画「查看全部色卡」。手势缩放、宏图横滑、木种横滑仍走原来的 `nfc-scroll-assets`。JSON 为空或加载失败时，浮层保持原样。
+
+在服务器上（推荐，cron 不用 SSH）：
+
+```bash
+cd /opt/dflab-color-library
+set -a
+. /etc/dflab/public-colors.env
+set +a
+python3 tools/feishu_public_colors.py sync
+DEPLOY_LOCAL=1 DEPLOY_LOCAL_DIR=/var/www/shanghaidflab \
+  ./tools/deploy_public_colors.sh
+```
+
+第一次接上浮层时再加 `PATCH_NFC=1`。之后同一行可以留着，已经插过就不会再改 `index.html`。
+
+从别的机器推：
+
+```bash
+export DEPLOY_SSH_USER=...
+export DEPLOY_SSH_KEY=/path/to/key
+./tools/deploy_public_colors.sh --dry-run
+./tools/deploy_public_colors.sh
+```
+
+远程目标写死为 `106.15.198.252:/var/www/shanghaidflab`。拷过去的只有：
+
+- `data/colors.json`
+- `assets/colors/`
+- `assets/nfc-public-colors.js`
+
+cron 示例（服务器上，每 5 分钟）：
+
+```cron
+*/5 * * * * . /etc/dflab/public-colors.env && cd /opt/dflab-color-library && python3 tools/feishu_public_colors.py sync && DEPLOY_LOCAL=1 DEPLOY_LOCAL_DIR=/var/www/shanghaidflab ./tools/deploy_public_colors.sh
+```
+
+`/etc/dflab/public-colors.env` 自己建，不要提交。
+
+分享链接仍用 `https://shanghaidflab.cn/#F-00001`。旧检索页认这个 hash；NFC 手势页以浮层和主图为准。
